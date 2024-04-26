@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Result Page</title>
+    <!-- Bootstrap CSS -->
+    <link
+      rel="stylesheet"
+      href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
+    />
+    <style>
+      body {
+        background-color: #f8f9fa;
+        padding-top: 20px;
+      }
+      .card {
+        margin-top: 20px;
+        border: 1px solid #ddd;
+        border-radius: 10px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      }
+      .card-title {
+        color: #007bff;
+        font-size: 1.5rem;
+      }
+      .card-text {
+        font-size: 1.2rem;
+      }
+      .result-info {
+        margin-top: 20px;
+        background-color: #f5f5f5;
+        padding: 20px;
+        border-radius: 10px;
+      }
+      .result-info h2 {
+        color: #28a745;
+      }
+      .result-info p {
+        margin-bottom: 10px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h1 class="text-center mb-4">Result Page</h1>
+      <div class="card">
+        <div class="card-body">
+          <h5 class="card-title">Result</h5>
+          <p class="card-text">The crop is: <strong>{{ ans.0 }}</strong></p>
+        </div>
+      </div>
+      <div class="result-info">
+        <h2>Information</h2>
+        <p>
+          The crop is determined based on the values of nitrogen, phosphorus,
+          potassium, ph and temperature.
+        </p>
+      </div>
+      <div>
+        <p class="card-text">Nitrogen: <strong>{{ list_values.0 }}</strong></p>
+        <p class="card-text">
+          Phosphorous: <strong>{{ list_values.1 }}</strong>
+        </p>
+        <p class="card-text">Potassium: <strong>{{ list_values.2 }}</strong></p>
+        <p class="card-text">
+          Temperature: <strong>{{ list_values.3 }}</strong>
+        </p>
+        <p class="card-text">Humidity: <strong>{{ list_values.4 }}</strong></p>
+        <p class="card-text">pH: <strong>{{ list_values.5 }}</strong></p>
+        <p class="card-text">Rainfall: <strong>{{ list_values.6 }}</strong></p>
+      </div>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+  </body>
+</html>

@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Help</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/styleForHelp.css' %}" />
+  </head>
+  <body>
+    <div class="top-banner">
+      <div class="container">
+        <div class="small-bold-text banner-text">
+          Farming with intelligence !!
+        </div>
+      </div>
+    </div>
+
+    <nav>
+      <div class="container main-nav flex">
+        <a href="#" class="company-logo">
+          <img
+            src="{% static 'images/Farm-MateLogo - Copy.png' %}"
+            alt="Company Logo"
+          />
+        </a>
+        <div class="nav-links">
+          <ul class="flex">
+            <li>
+              <a href="{% url 'products' %}" class="hover-links">Products</a>
+            </li>
+            <li>
+              <a href="{% url 'aboutUs' %}" class="hover-links">About us</a>
+            </li>
+            <li>
+              <a href="{% url 'resources' %}" class="hover-links">Resources</a>
+            </li>
+            <li><a href="{% url 'help' %}" class="hover-links">Help</a></li>
+            <li>
+              <a href="{% url 'login' %}" class="hover-links secondary-button"
+                >Sign in</a
+              >
+            </li>
+            <li><a href="#" class="hover-links primary-button">Sign up</a></li>
+          </ul>
+        </div>
+      </div>
+    </nav>
+  </body>
+</html>
