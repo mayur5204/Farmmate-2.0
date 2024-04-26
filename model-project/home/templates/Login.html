@@ -1,38 +1,42 @@
-<!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Farm-Mate/LoginPage</title>
-    {% load static %}
-    <link rel="stylesheet" href="{% static 'css/styleForLogin.css' %}" />
-  </head>
-  <body>
-    <div class="wrapper">
-      <form action="{% url 'login' %}">
-        <h1>Login</h1>
-        <div class="input-box">
-          <input type="text" placeholder="Username" required />
-        </div>
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Farm-Mate/LoginPage{% endblock %}
 
-        <div class="input-box">
-          <input type="password" placeholder="Password" required />
-        </div>
-        <div class="remember-forgot">
-          <label>
-            <input type="checkbox" />
-            Remember Me !
-          </label>
-          <a href="#">Forget Password</a>
-        </div>
-        <button type="submit" class="btn">Login</button>
-        <div class="register-link">
-          <p>
-            Don't Have an Account?
-            <a href="#"> Register </a>
-          </p>
-        </div>
-      </form>
+{% block head %}
+  {{ block.super }}
+  <link rel="stylesheet" href="{% static 'css/styleForLogin.css' %}" />
+{% endblock %}
+
+{% block content %}
+<div class="container">
+  <div class="row justify-content-center">
+    <div class="col-md-6">
+      <div class="wrapper">
+        <form action="{% url 'login' %}" class="mt-4">
+          <h1 class="text-center mb-4">Login</h1>
+          <div class="form-group row">
+            <div class="col">
+              <input type="text" class="form-control" placeholder="Username" required />
+            </div>
+          </div>
+
+          <div class="form-group row">
+            <div class="col">
+              <input type="password" class="form-control" placeholder="Password" required />
+            </div>
+          </div>
+          <div class="form-group form-check">
+            <input type="checkbox" class="form-check-input" id="rememberMe">
+            <label class="form-check-label" for="rememberMe">Remember Me</label>
+            <a href="#" class="ml-2">Forget Password</a>
+          </div>
+          <button type="submit" class="btn btn-primary btn-block">Login</button>
+          <div class="text-center mt-3">
+            <p>Don't Have an Account? <a href="#">Register</a></p>
+          </div>
+        </form>
+      </div>
     </div>
-  </body>
-</html>
+  </div>
+</div>
+{% endblock %}

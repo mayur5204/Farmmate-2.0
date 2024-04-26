@@ -1,133 +1,100 @@
-<!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Crop Recommendation System</title>
-    <!-- Bootstrap CSS -->
-    <link
-      href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
-      rel="stylesheet"
-    />
-    <style>
-      body {
-        background-color: #f8f9fa;
-        padding-top: 50px;
-      }
-      .form-group {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-      }
-      .form-group label {
-        font-weight: bold;
-        margin-bottom: 5px;
-      }
-      .form-control {
-        border-radius: 10px;
-        border-color: #ced4da;
-        width: 50%; /* Reduced width for input fields */
-      }
-      .btn-container {
-        display: flex;
-        justify-content: center;
-        margin-top: 20px;
-      }
-      .btn-primary {
-        background-color: #007bff;
-        border-color: #007bff;
-      }
-      .btn-primary:hover {
-        background-color: #0056b3;
-        border-color: #0056b3;
-      }
-    </style>
-  </head>
-  <body>
-    <div class="container">
-      <h1 class="text-center mb-4">Crop Recommendation System</h1>
-      <form action="{% url 'result' %}" method="POST">
-        {% csrf_token %}
-        <div class="form-group">
-          <label for="nitrogen">Nitrogen:</label>
-          <input
-            type="text"
-            id="nitrogen"
-            name="nitrogen"
-            class="form-control"
-            required
-          />
-        </div>
+{% extends 'base.html' %}
 
-        <div class="form-group">
-          <label for="phosphorus">Phosphorus:</label>
-          <input
-            type="text"
-            id="phosphorus"
-            name="phosphorus"
-            class="form-control"
-            required
-          />
-        </div>
+{% block title %}Crop Recommendation System{% endblock %}
 
-        <div class="form-group">
-          <label for="potassium">Potassium:</label>
-          <input
-            type="text"
-            id="potassium"
-            name="potassium"
-            class="form-control"
-            required
-          />
-        </div>
-
-        <div class="form-group">
-          <label for="temperature">Temperature:</label>
-          <input
-            type="text"
-            id="temperature"
-            name="temperature"
-            class="form-control"
-            required
-          />
-        </div>
-
-        <div class="form-group">
-          <label for="humidity">Humidity:</label>
-          <input
-            type="text"
-            id="humidity"
-            name="humidity"
-            class="form-control"
-            required
-          />
-        </div>
-
-        <div class="form-group">
-          <label for="ph">pH:</label>
-          <input type="text" id="ph" name="ph" class="form-control" required />
-        </div>
-
-        <div class="form-group">
-          <label for="rainfall">Rainfall:</label>
-          <input
-            type="text"
-            id="rainfall"
-            name="rainfall"
-            class="form-control"
-            required
-          />
-        </div>
-
-        <div class="btn-container">
-          <button type="submit" class="btn btn-primary">Submit</button>
-        </div>
-      </form>
+{% block content %}
+<div class="container">
+  <h1 class="text-center mb-4">Crop Recommendation System</h1>
+  <form action="{% url 'result' %}" method="POST">
+    {% csrf_token %}
+    <div class="form-group row">
+      <label for="nitrogen" class="col-sm-12 col-form-label text-center">Nitrogen</label>
+      <div class="col-sm-6 mx-auto">
+        <input
+          type="text"
+          id="nitrogen"
+          name="nitrogen"
+          class="form-control"
+          required
+        />
+      </div>
     </div>
 
-    <!-- Bootstrap JS and dependencies -->
-    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.1/dist/umd/popper.min.js"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-  </body>
-</html>
+    <div class="form-group row">
+      <label for="phosphorus" class="col-sm-12 col-form-label text-center">Phosphorus</label>
+      <div class="col-sm-6 mx-auto">
+        <input
+          type="text"
+          id="phosphorus"
+          name="phosphorus"
+          class="form-control"
+          required
+        />
+      </div>
+    </div>
+
+    <div class="form-group row">
+      <label for="potassium" class="col-sm-12 col-form-label text-center">Potassium</label>
+      <div class="col-sm-6 mx-auto">
+        <input
+          type="text"
+          id="potassium"
+          name="potassium"
+          class="form-control"
+          required
+        />
+      </div>
+    </div>
+
+    <div class="form-group row">
+      <label for="temperature" class="col-sm-12 col-form-label text-center">Temperature</label>
+      <div class="col-sm-6 mx-auto">
+        <input
+          type="text"
+          id="temperature"
+          name="temperature"
+          class="form-control"
+          required
+        />
+      </div>
+    </div>
+
+    <div class="form-group row">
+      <label for="humidity" class="col-sm-12 col-form-label text-center">Humidity</label>
+      <div class="col-sm-6 mx-auto">
+        <input
+          type="text"
+          id="humidity"
+          name="humidity"
+          class="form-control"
+          required
+        />
+      </div>
+    </div>
+
+    <div class="form-group row">
+      <label for="ph" class="col-sm-12 col-form-label text-center">pH</label>
+      <div class="col-sm-6 mx-auto">
+        <input type="text" id="ph" name="ph" class="form-control" required />
+      </div>
+    </div>
+
+    <div class="form-group row">
+      <label for="rainfall" class="col-sm-12 col-form-label text-center">Rainfall</label>
+      <div class="col-sm-6 mx-auto">
+        <input
+          type="text"
+          id="rainfall"
+          name="rainfall"
+          class="form-control"
+          required
+        />
+      </div>
+    </div>
+
+    <div class="btn-container text-center">
+      <button type="submit" class="btn btn-primary">Submit</button>
+    </div>
+  </form>
+</div>
+{% endblock %}

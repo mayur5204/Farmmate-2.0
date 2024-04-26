@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Weather Forecast{% endblock %}
+
+{% block content %}
+<div class="container">
+  <div class="row justify-content-center">
+    <div class="col-md-4">
+      <div class="Weather-Forecast">
+        <script
+          src="https://static.elfsight.com/platform/platform.js"
+          data-use-service-core
+          defer
+        ></script>
+        <div
+          class="elfsight-app-4b0a9fd5-3776-4ef3-9ed1-dac650c2ccbb"
+          data-elfsight-app-lazy
+        ></div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

@@ -25,6 +25,9 @@ def help(request):
 def login(request):
     return render(request, 'login.html')
 
+def weather(request):
+    return render(request, 'weatherForecast.html')
+
 
 def result(request):
     cls = joblib.load('../finalized_model.sav')

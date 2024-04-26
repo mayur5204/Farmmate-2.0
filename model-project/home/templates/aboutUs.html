@@ -1,50 +1,21 @@
-<!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>About Us</title>
-    {% load static %}
-    <link rel="stylesheet" href="{% static 'css/styleForAboutUs.css' %}" />
-  </head>
-  <body>
-    <div class="top-banner">
-      <div class="container">
-        <div class="small-bold-text banner-text">
-          Farming with intelligence !!
-        </div>
-      </div>
-    </div>
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}About Us{% endblock %}
 
-    <nav>
-      <div class="container main-nav flex">
-        <a href="#" class="company-logo">
-          <img
-            src="{% static 'images/Farm-MateLogo - Copy.png' %}"
-            alt="Company Logo"
-          />
-        </a>
-        <div class="nav-links">
-          <ul class="flex">
-            <li>
-              <a href="{% url 'products' %}" class="hover-links">Products</a>
-            </li>
-            <li>
-              <a href="{% url 'aboutUs' %}" class="hover-links">About us</a>
-            </li>
-            <li>
-              <a href="{% url 'resources' %}" class="hover-links">Resources</a>
-            </li>
-            <li><a href="{% url 'help' %}" class="hover-links">Help</a></li>
-            <li>
-              <a href="{% url 'login' %}" class="hover-links secondary-button"
-                >Sign in</a
-              >
-            </li>
-            <li><a href="#" class="hover-links primary-button">Sign up</a></li>
-          </ul>
-        </div>
-      </div>
-    </nav>
-  </body>
-</html>
+{% block content %}
+<div class="container">
+  <h1 class="text-center mb-4">About Us</h1>
+  <div class="card">
+    <div class="card-body">
+      <h5 class="card-title">Farm-Mate</h5>
+      <p class="card-text">
+        Farm-Mate is a website that offers intelligent solutions to maximize
+        yields, optimize resources, and make data-driven decisions for a smarter
+        future in agriculture. We empower farmers with AI and ML to help them
+        farm intelligently.
+      </p>
+    </div>
+  </div>
+</div>
+
+{% endblock %}
