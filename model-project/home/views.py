@@ -4,6 +4,7 @@ from django.shortcuts import render, redirect
 import joblib
 
 
+# Create your views here.
 
 
 def home(request):
