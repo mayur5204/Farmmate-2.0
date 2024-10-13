@@ -17,4 +17,6 @@ urlpatterns = [
     path('help/', views.help, name='help'),
     path('login/', views.login, name='login'),
     path('weather/', views.weather, name='weather'),
+    path('register/', views.register, name='register'),
+    path('logout/', views.logout, name='logout'),
 ]
