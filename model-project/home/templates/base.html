@@ -1,22 +1,30 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>{% block title %}Farm-Mate{% endblock %}</title>
     {% load static %}
     <link rel="stylesheet" href="{% static 'css/style.css' %}" />
     <!-- Bootstrap CSS -->
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" />
+    <link
+      rel="stylesheet"
+      href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
+    />
     <style>
       .navbar {
-        background-color: rgba(146, 255, 190, 0.37); /* Blurred white color with opacity */
+        background-color: rgba(
+          146,
+          255,
+          190,
+          0.37
+        ); /* Blurred white color with opacity */
         border: 1px solid #ddd; /* Add a border */
         border-radius: 10px; /* Add border radius */
       }
       .navbar-brand img {
         height: 50px; /* Adjust the height to make the logo bigger */
-        width: auto
+        width: auto;
       }
       .nav-link {
         font-weight: bold; /* Bolden the text of nav links */
@@ -26,7 +34,12 @@
         transition: background-color 0.3s ease, color 0.3s ease; /* Smooth transition */
       }
       .nav-link:hover {
-        background-color: rgba(255, 255, 255, 0.3); /* Light white color on hover */
+        background-color: rgba(
+          255,
+          255,
+          255,
+          0.3
+        ); /* Light white color on hover */
       }
       footer {
         background-color: #f8f9fa; /* Light gray background color */
@@ -34,8 +47,8 @@
         text-align: center; /* Center-align the content */
       }
     </style>
-</head>
-<body>
+  </head>
+  <body>
     <!-- Navigation with Bootstrap Styling -->
     <nav class="navbar navbar-expand-lg navbar-light">
       <div class="container">
@@ -59,23 +72,39 @@
         <div class="collapse navbar-collapse" id="navbarNav">
           <ul class="navbar-nav ml-auto">
             <li class="nav-item">
-              <a class="nav-link btn btn-light mr-2" href="{% url 'products' %}">Products</a>
+              <a class="nav-link btn btn-light mr-2" href="{% url 'products' %}"
+                >Products</a
+              >
             </li>
             <li class="nav-item">
-              <a class="nav-link btn btn-light mr-2" href="{% url 'aboutUs' %}">About us</a>
+              <a class="nav-link btn btn-light mr-2" href="{% url 'aboutUs' %}"
+                >About us</a
+              >
             </li>
             <li class="nav-item">
-              <a class="nav-link btn btn-light mr-2" href="{% url 'resources' %}">Resources</a>
+              <a
+                class="nav-link btn btn-light mr-2"
+                href="{% url 'resources' %}"
+                >Resources</a
+              >
             </li>
             <li class="nav-item">
-              <a class="nav-link btn btn-light mr-2" href="{% url 'help' %}">Help</a>
+              <a class="nav-link btn btn-light mr-2" href="{% url 'help' %}"
+                >Help</a
+              >
+            </li>
+            {% if user.is_authenticated %}
+            <li class="nav-item">
+              <a class="nav-link" href="{% url 'logout' %}">Logout</a>
+            </li>
+          {% else %}
+            <li class="nav-item">
+              <a class="nav-link" href="{% url 'login' %}">Sign In</a>
             </li>
             <li class="nav-item">
-              <a class="nav-link btn btn-outline-success mr-2" href="{% url 'login' %}">Sign in</a>
+              <a class="nav-link" href="{% url 'register' %}">Sign Up</a>
             </li>
-            <li class="nav-item">
-              <a class="nav-link btn btn-outline-primary" href="#">Sign up</a>
-            </li>
+          {% endif %}
           </ul>
         </div>
       </div>
@@ -86,12 +115,12 @@
 
     <!-- Footer -->
     <footer>
-        <p>&copy; 2024 Farm-Mate. All rights reserved.</p>
+      <p>&copy; 2024 Farm-Mate. All rights reserved.</p>
     </footer>
 
     <!-- Bootstrap JS and dependencies -->
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.1/dist/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-</body>
+  </body>
 </html>
