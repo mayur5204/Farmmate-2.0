@@ -4,6 +4,7 @@ from django.urls import reverse
 from django.utils import timezone
 from django.utils.text import slugify
 from django.core.exceptions import ValidationError
+from .storage import MobileCompatibleStorage
 
 # Category choices for posts
 CATEGORY_CHOICES = [
@@ -23,11 +24,29 @@ def validate_file_size(value):
         raise ValidationError("The maximum file size that can be uploaded is 5MB")
     return value
 
+def validate_file_extension(value):
+    """Validate that the file has an acceptable image extension"""
+    import os
+    from django.core.exceptions import ValidationError
+    
+    # Get the file extension
+    ext = os.path.splitext(value.name)[1]
+    valid_extensions = ['.jpg', '.jpeg', '.png', '.gif', '.heic', '.heif']
+    
+    if not ext.lower() in valid_extensions:
+        raise ValidationError('Unsupported file extension. Allowed formats: JPG, JPEG, PNG, GIF, HEIC, HEIF')
+
 class Post(models.Model):
     """Model for community forum posts"""
     title = models.CharField(max_length=200)
     content = models.TextField()
-    image = models.ImageField(upload_to='community_posts/%Y/%m/', blank=True, null=True, validators=[validate_file_size])
+    image = models.ImageField(
+        upload_to='community_posts/%Y/%m/', 
+        blank=True, 
+        null=True, 
+        validators=[validate_file_size, validate_file_extension],
+        storage=MobileCompatibleStorage()
+    )
     created_at = models.DateTimeField(default=timezone.now)
     updated_at = models.DateTimeField(auto_now=True)
     author = models.ForeignKey(User, on_delete=models.CASCADE, related_name='posts')

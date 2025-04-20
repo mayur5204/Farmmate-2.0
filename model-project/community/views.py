@@ -68,12 +68,37 @@ def create_post(request):
     """View for creating new posts"""
     if request.method == 'POST':
         form = PostForm(request.POST, request.FILES)
+        
+        # Debug logging for mobile uploads
+        image_file = request.FILES.get('image')
+        if image_file:
+            # Log file information to help with debugging
+            print(f"Received file upload: {image_file.name}, size: {image_file.size}, content type: {image_file.content_type}")
+            
+            # Check file size early and provide clear message
+            if image_file.size > 5 * 1024 * 1024:  # 5MB limit
+                messages.error(request, 'The image file is too large. Maximum size is 5MB.')
+                form.add_error('image', 'The image file is too large. Maximum size is 5MB.')
+                return render(request, 'community/post_form.html', {
+                    'form': form,
+                    'title': 'Create Post',
+                    'button_text': 'Post'
+                })
+        
         if form.is_valid():
-            post = form.save(commit=False)
-            post.author = request.user
-            post.save()
-            messages.success(request, 'Your post has been created successfully!')
-            return redirect('post_detail', pk=post.pk)
+            try:
+                post = form.save(commit=False)
+                post.author = request.user
+                post.save()
+                messages.success(request, 'Your post has been created successfully!')
+                return redirect('post_detail', pk=post.pk)
+            except Exception as e:
+                # Catch any unexpected errors during file processing
+                messages.error(request, f'Error saving post: {str(e)}')
+                print(f"Error saving post: {str(e)}")
+        else:
+            # Print form errors for debugging
+            print(f"Form errors: {form.errors}")
     else:
         form = PostForm()
     
