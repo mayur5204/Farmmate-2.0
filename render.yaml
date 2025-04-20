@@ -22,7 +22,6 @@ services:
   - type: cron
     name: cleanup-media
     runtime: python
-    plan: free  # Explicitly set to use the free tier
     schedule: "0 0 * * *"  # Run at midnight every day
     buildCommand: pip install -r requirements.txt
     startCommand: cd model-project && python ../cleanup_media.py
