@@ -8,17 +8,27 @@ pip install -r requirements.txt
 # Navigate to the Django project directory
 cd model-project
 
-# Create necessary media directories if they don't exist
-mkdir -p media/community_posts/2025
-mkdir -p media/profile_pics
+# Set up persistent directories for database and media
+mkdir -p /opt/render/project/data
+mkdir -p /opt/render/project/data/media
+mkdir -p /opt/render/project/data/media/community_posts/2025
+mkdir -p /opt/render/project/data/media/profile_pics
+
+# Copy the local database to persistent storage if it doesn't exist
+if [ ! -f /opt/render/project/data/db.sqlite3 ]; then
+  echo "Creating initial database in persistent storage"
+  if [ -f db.sqlite3 ]; then
+    cp db.sqlite3 /opt/render/project/data/db.sqlite3
+  fi
+fi
 
 # Copy default profile picture if it doesn't exist
-if [ ! -f media/profile_pics/default.png ]; then
-  cp -n static/images/farmerLogo.png media/profile_pics/default.png 2>/dev/null || :
+if [ ! -f /opt/render/project/data/media/profile_pics/default.png ]; then
+  cp -n static/images/farmerLogo.png /opt/render/project/data/media/profile_pics/default.png 2>/dev/null || :
 fi
 
 # Collect static files
 python manage.py collectstatic --no-input
 
-# Run migrations
+# Run migrations on the persistent database
 python manage.py migrate

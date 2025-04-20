@@ -109,12 +109,25 @@ WSGI_APPLICATION = 'model.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+# Determine if we're running on Render.com
+IS_RENDER = os.environ.get('RENDER', '') == 'true'
+
+if IS_RENDER:
+    # Use persistent storage for database on Render
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': '/opt/render/project/data/db.sqlite3',
+        }
     }
-}
+else:
+    # Default configuration for local development
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': BASE_DIR / 'db.sqlite3',
+        }
+    }
 
 # Use DATABASE_URL environment variable if available and dj_database_url is installed
 if HAVE_DJ_DATABASE_URL:

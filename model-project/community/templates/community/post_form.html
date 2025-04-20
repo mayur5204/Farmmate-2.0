@@ -55,8 +55,16 @@
                         <!-- Image field -->
                         <div class="form-group">
                             <label for="{{ form.image.id_for_label }}">Image (Optional)</label>
-                            {{ form.image }}
-                            <small class="form-text text-muted">Upload an image to enhance your post (optional).</small>
+                            <div class="custom-file-container">
+                                <!-- Hidden original input that Django generates -->
+                                <div style="display:none;">{{ form.image }}</div>
+                                
+                                <!-- Mobile-friendly custom file input -->
+                                <input type="file" id="mobile-image-input" name="image" accept="image/*" capture="camera" class="form-control-file" style="width: 100%;">
+                                
+                                <small class="form-text text-muted">Upload an image to enhance your post (optional).</small>
+                                <small class="form-text text-primary">Tap to select or take a photo on mobile devices</small>
+                            </div>
                         </div>
                         
                         {% if post.image %}
@@ -84,4 +92,29 @@
         </div>
     </div>
 </div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Get both file input elements
+        var originalInput = document.querySelector('{{ form.image.id_for_label }}');
+        var mobileInput = document.getElementById('mobile-image-input');
+        
+        // Sync the files between inputs
+        mobileInput.addEventListener('change', function() {
+            // Transfer the selected file to the original Django input
+            if (mobileInput.files && mobileInput.files.length > 0) {
+                // Create a new DataTransfer object
+                const dataTransfer = new DataTransfer();
+                // Add the selected file
+                dataTransfer.items.add(mobileInput.files[0]);
+                // Set the files property of the original input
+                originalInput.files = dataTransfer.files;
+                
+                // Show selected filename
+                var filename = mobileInput.value.split('\\').pop();
+                mobileInput.nextElementSibling.innerText = 'Selected: ' + filename;
+            }
+        });
+    });
+</script>
 {% endblock %}
