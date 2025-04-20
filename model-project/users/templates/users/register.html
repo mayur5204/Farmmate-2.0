@@ -1,0 +1,163 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Register - Farm-Mate{% endblock %}
+
+{% block head %}
+  {{ block.super }}
+  <link rel="stylesheet" href="{% static 'css/users/auth-styles.css' %}" />
+{% endblock %}
+
+{% block content %}
+<div class="container auth-container">
+  <div class="row justify-content-center w-100">
+    <div class="col-md-6 col-lg-5">
+      <div class="auth-card card shadow">
+        <div class="card-header bg-success text-white text-center">
+          <h3>Create an Account</h3>
+        </div>
+        <div class="card-body">
+          <!-- Farm-Mate Branding - Centered and Prominent -->
+          <div class="text-center mb-4">
+            <h2 class="text-success font-weight-bold">FARM-MATE</h2>
+            <p class="text-muted">Join the Farm-Mate community</p>
+          </div>
+          
+          <!-- Display messages -->
+          {% if messages %}
+            {% for message in messages %}
+              <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                {{ message }}
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                  <span aria-hidden="true">&times;</span>
+                </button>
+              </div>
+            {% endfor %}
+          {% endif %}
+          
+          <!-- Registration Form -->
+          <form method="POST" action="{% url 'register' %}" class="auth-form">
+            {% csrf_token %}
+            <div class="form-group">
+              <label for="username">Username</label>
+              <div class="input-group">
+                <div class="input-group-prepend">
+                  <span class="input-group-text"><i class="fas fa-user"></i></span>
+                </div>
+                <input type="text" class="form-control" id="username" name="username" placeholder="Choose a username" required>
+              </div>
+              <small class="form-text text-muted validation-feedback">Username must be unique and contain only letters, numbers, and underscores.</small>
+            </div>
+            
+            <div class="form-group">
+              <label for="email">Email</label>
+              <div class="input-group">
+                <div class="input-group-prepend">
+                  <span class="input-group-text"><i class="fas fa-envelope"></i></span>
+                </div>
+                <input type="email" class="form-control" id="email" name="email" placeholder="Enter your email address" required>
+              </div>
+            </div>
+            
+            <div class="form-group">
+              <label for="password">Password</label>
+              <div class="input-group">
+                <div class="input-group-prepend">
+                  <span class="input-group-text"><i class="fas fa-lock"></i></span>
+                </div>
+                <input type="password" class="form-control" id="password" name="password" placeholder="Create a strong password" required>
+                <div class="input-group-append">
+                  <span class="input-group-text password-toggle" onclick="togglePassword('password')">
+                    <i class="far fa-eye" id="password-toggle-icon"></i>
+                  </span>
+                </div>
+              </div>
+              <small class="form-text text-muted validation-feedback">Password must be at least 8 characters long.</small>
+            </div>
+            
+            <div class="form-group">
+              <label for="confirmpassword">Confirm Password</label>
+              <div class="input-group">
+                <div class="input-group-prepend">
+                  <span class="input-group-text"><i class="fas fa-lock"></i></span>
+                </div>
+                <input type="password" class="form-control" id="confirmpassword" name="confirmpassword" placeholder="Confirm your password" required>
+                <div class="input-group-append">
+                  <span class="input-group-text password-toggle" onclick="togglePassword('confirmpassword')">
+                    <i class="far fa-eye" id="confirmpassword-toggle-icon"></i>
+                  </span>
+                </div>
+              </div>
+            </div>
+            
+            <div class="form-group">
+              <div class="form-check">
+                <input type="checkbox" class="form-check-input" id="agree-terms" name="agree-terms" required>
+                <label class="form-check-label" for="agree-terms">I agree to the <a href="#" class="auth-link">Terms of Service</a> and <a href="#" class="auth-link">Privacy Policy</a></label>
+              </div>
+            </div>
+            
+            <div class="form-group">
+              <button type="submit" class="btn btn-auth btn-success btn-block" name="signup">
+                <i class="fas fa-user-plus mr-2"></i>Create Account
+              </button>
+            </div>
+          </form>
+          
+          <!-- OR divider with stronger centering -->
+          <div style="text-align: center; margin: 20px 0; position: relative;">
+            <hr style="margin-bottom: 0; position: relative;">
+            <div style="position: absolute; top: -10px; left: 50%; transform: translateX(-50%); background-color: white; padding: 0 10px;">
+              <span style="display: inline-block;">OR</span>
+            </div>
+          </div>
+          
+          <p class="text-center mt-3">Already have an account? <a href="{% url 'login' %}" class="auth-link">Login here</a></p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  function togglePassword(inputId) {
+    const passwordInput = document.getElementById(inputId);
+    const toggleIcon = document.getElementById(inputId + '-toggle-icon');
+    
+    if (passwordInput.type === 'password') {
+      passwordInput.type = 'text';
+      toggleIcon.classList.remove('fa-eye');
+      toggleIcon.classList.add('fa-eye-slash');
+    } else {
+      passwordInput.type = 'password';
+      toggleIcon.classList.remove('fa-eye-slash');
+      toggleIcon.classList.add('fa-eye');
+    }
+  }
+  
+  document.addEventListener('DOMContentLoaded', function() {
+    const password = document.getElementById('password');
+    const confirmPassword = document.getElementById('confirmpassword');
+    
+    // Real-time password confirmation validation
+    confirmPassword.addEventListener('input', function() {
+      if (password.value !== confirmPassword.value) {
+        confirmPassword.setCustomValidity("Passwords don't match");
+      } else {
+        confirmPassword.setCustomValidity('');
+      }
+    });
+    
+    // Clear validation on password change
+    password.addEventListener('input', function() {
+      if (confirmPassword.value) {
+        if (password.value !== confirmPassword.value) {
+          confirmPassword.setCustomValidity("Passwords don't match");
+        } else {
+          confirmPassword.setCustomValidity('');
+        }
+      }
+    });
+  });
+</script>
+{% endblock %}

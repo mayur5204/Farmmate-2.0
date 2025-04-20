@@ -1,213 +1,296 @@
 {% extends 'base.html' %}
 {% load static %}
 
-{% block title %}Farm-Mate/Home{% endblock %}
+{% block title %}Farm-Mate - Helpful Farming Guide{% endblock %}
+
+{% block extra_css %}
+<style>
+  .hero-section {
+    background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url('{% static "images/featuresBackground.jpg" %}');
+    background-size: cover;
+    background-position: center;
+    padding: 6rem 0;
+    color: white;
+  }
+  
+  .hero-content {
+    max-width: 800px;
+    margin: 0 auto;
+  }
+  
+  .feature-card {
+    height: 100%;
+    transition: transform 0.2s ease-in-out;
+    border-radius: 12px;
+    border: 1px solid #e0e0e0;
+  }
+  
+  .feature-card:hover {
+    transform: translateY(-5px);
+  }
+  
+  .feature-icon {
+    width: 90px;
+    height: 90px;
+    background-color: rgba(46, 125, 50, 0.1);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 1.5rem;
+  }
+  
+  .feature-icon i {
+    font-size: 2.8rem;
+    color: var(--primary);
+  }
+  
+  /* Simplified step indicators */
+  .step-number {
+    font-size: 2.5rem;
+    font-weight: bold;
+    color: white;
+  }
+  
+  /* More visual instructions */
+  .instruction-card {
+    background: white;
+    border-radius: 15px;
+    padding: 1.5rem;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    height: 100%;
+  }
+  
+  /* Quick access buttons */
+  .quick-access-btn {
+    padding: 15px;
+    border-radius: 10px;
+    text-align: center;
+    transition: all 0.3s;
+    margin-bottom: 15px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+  }
+  
+  .quick-access-btn:hover {
+    transform: scale(1.05);
+  }
+  
+  .quick-access-btn i {
+    font-size: 2rem;
+    margin-bottom: 10px;
+  }
+  
+  /* Weather summary */
+  .weather-summary {
+    background: linear-gradient(135deg, #7cc142, #2e7d32);
+    color: white;
+    border-radius: 10px;
+    padding: 20px;
+  }
+  
+  /* Improved accessibility */
+  .btn-large-text {
+    font-size: 1.2rem;
+    padding: 12px 25px;
+  }
+  
+  /* Mobile improvements */
+  @media (max-width: 768px) {
+    .hero-section {
+      padding: 4rem 0;
+    }
+    
+    .step-number {
+      font-size: 2rem;
+    }
+    
+    .quick-access-section {
+      margin-top: -50px;
+      position: relative;
+      z-index: 10;
+    }
+  }
+</style>
+{% endblock %}
 
 {% block content %}
-<header>
-  <div class="container header-section flex">
-    <div class="header-left">
-      <h1>Farming Intelligently</h1>
-      <p>
-        Empowering farmers with AI and ML, this website offers intelligent
-        solutions to maximize yields, optimize resources, and make
-        data-driven decisions for a smarter future in agriculture.
-      </p>
-      <a href="#" class="primary-button get-started-button">Get Started</a>
-    </div>
-    <div class="header-right">
-      <img
-        src="{% static 'images/FarmingConfidently - Copy.jfif' %}"
-        alt="Farmking Intelligently"
-      />
-    </div>
-  </div>
-</header>
-
-<section class="companies-section">
-  <div class="container">
-    <div class="small-bold-text">
-      <!-- Content of the companies section goes here -->
+<!-- Hero Section - Simplified language -->
+<section class="hero-section">
+  <div class="container text-center">
+    <div class="hero-content">
+      <h1 class="display-4 font-weight-bold mb-4">Better Farming, Better Harvest</h1>
+      <p class="lead mb-5" style="font-size: 1.3rem;">Farm-Mate helps you choose the right crops for your land and get better harvests.</p>
+      <div class="d-flex justify-content-center flex-wrap">
+        <a href="{% url 'croprecommendation' %}" class="btn btn-lg btn-primary btn-large-text">
+          <i class="fas fa-seedling mr-2"></i>Find Best Crops For My Farm
+        </a>
+      </div>
     </div>
   </div>
 </section>
 
-<!-- features Section -->
-
-<section class="feature-section">
+<!-- Quick Access Section - New section for quick navigation -->
+<section class="py-4 quick-access-section">
   <div class="container">
-    <div class="features-header">
-      <h2 class="features-heading-text">
-        Weather, cost analysis, soil, crops & more
-      </h2>
-      <a href="#" class="secondary-button">
-        See All Features <i class="fa-solid fa-right-long"></i>
+    <div class="row justify-content-center">
+      <div class="col-6 col-md-3">
+        <a href="{% url 'croprecommendation' %}" class="d-block quick-access-btn bg-white">
+          <i class="fas fa-seedling text-success d-block"></i>
+          <span class="d-block font-weight-bold">Crop Guide</span>
+        </a>
+      </div>
+      <div class="col-6 col-md-3">
+        <a href="{% url 'post_list' %}" class="d-block quick-access-btn bg-white">
+          <i class="fas fa-users text-primary d-block"></i>
+          <span class="d-block font-weight-bold">Farmer Community</span>
+        </a>
+      </div>
+      <div class="col-6 col-md-3">
+        <a href="{% url 'resources' %}" class="d-block quick-access-btn bg-white">
+          <i class="fas fa-book-open text-info d-block"></i>
+          <span class="d-block font-weight-bold">Farming Tips</span>
+        </a>
+      </div>
+      <div class="col-6 col-md-3">
+        <a href="{% url 'help' %}" class="d-block quick-access-btn bg-white">
+          <i class="fas fa-question-circle text-warning d-block"></i>
+          <span class="d-block font-weight-bold">Get Help</span>
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Main Feature - With simpler explanation -->
+<section class="py-5">
+  <div class="container">
+    <div class="text-center mb-5">
+      <h2 class="mb-3" style="font-size: 2.2rem;">How Farm-Mate Helps Your Farming</h2>
+      <div class="mx-auto" style="width: 100px; height: 4px; background-color: var(--primary);"></div>
+      <p class="lead mt-3" style="font-size: 1.2rem;">Simple tools for better farming decisions</p>
+    </div>
+    
+    <div class="row justify-content-center">
+      <div class="col-lg-8 col-md-10 mb-4">
+        <div class="farmmate-card feature-card">
+          <div class="farmmate-card-body text-center p-4">
+            <div class="feature-icon">
+              <i class="fas fa-seedling"></i>
+            </div>
+            <h4 class="mb-3" style="font-size: 1.8rem;">Crop Recommendation</h4>
+            <p style="font-size: 1.1rem;">Tell us about your soil and location, and we will suggest which crops will grow best in your farm.</p>
+            <a href="{% url 'croprecommendation' %}" class="btn btn-primary btn-lg mt-3">
+              <i class="fas fa-check-circle mr-2"></i>Get Crop Suggestions
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- How It Works Section - With visual steps -->
+<section class="py-5 bg-light">
+  <div class="container">
+    <div class="text-center mb-5">
+      <h2 class="mb-3" style="font-size: 2.2rem;">How to Use Farm-Mate</h2>
+      <div class="mx-auto" style="width: 100px; height: 4px; background-color: var(--primary);"></div>
+      <p class="lead mt-3" style="font-size: 1.2rem;">Just three easy steps</p>
+    </div>
+    
+    <div class="row">
+      <div class="col-md-4 mb-4">
+        <div class="instruction-card">
+          <div class="text-center mb-3">
+            <div class="bg-primary rounded-circle d-flex align-items-center justify-content-center mx-auto" style="width: 70px; height: 70px;">
+              <span class="step-number">1</span>
+            </div>
+          </div>
+          <h4 class="text-center mb-3" style="font-size: 1.5rem;">Enter Your Farm Details</h4>
+          <!-- Image removed -->
+          <p style="font-size: 1.1rem;">Tell us about your soil and farm location. If you have a soil test, enter those numbers.</p>
+        </div>
+      </div>
+      
+      <div class="col-md-4 mb-4">
+        <div class="instruction-card">
+          <div class="text-center mb-3">
+            <div class="bg-primary rounded-circle d-flex align-items-center justify-content-center mx-auto" style="width: 70px; height: 70px;">
+              <span class="step-number">2</span>
+            </div>
+          </div>
+          <h4 class="text-center mb-3" style="font-size: 1.5rem;">We Check What's Best</h4>
+          <!-- Image removed -->
+          <p style="font-size: 1.1rem;">Our system compares your farm with successful farming patterns to find good matches.</p>
+        </div>
+      </div>
+      
+      <div class="col-md-4 mb-4">
+        <div class="instruction-card">
+          <div class="text-center mb-3">
+            <div class="bg-primary rounded-circle d-flex align-items-center justify-content-center mx-auto" style="width: 70px; height: 70px;">
+              <span class="step-number">3</span>
+            </div>
+          </div>
+          <h4 class="text-center mb-3" style="font-size: 1.5rem;">Get Crop Suggestions</h4>
+          <!-- Image removed -->
+          <p style="font-size: 1.1rem;">See which crops will likely grow well on your farm and give you good harvests.</p>
+        </div>
+      </div>
+    </div>
+    
+    <div class="text-center mt-4">
+      <a href="{% url 'croprecommendation' %}" class="btn btn-lg btn-success btn-large-text">
+        <i class="fas fa-leaf mr-2"></i>Try It Now
       </a>
     </div>
-    <div class="features-area flex">
-      <!-- Feature Cards -->
-      <!-- Crop Health -->
-      <div class="features-card flex">
-        <img
-          src="{% static 'images/cropHealthLogo.jpg' %}"
-          alt=""
-          style="height: 100px"
-        />
-        <h3>Crop Health</h3>
-        <p>Check health of Your Crop by Clicking Photo of it</p>
-        <a href="#" class="secondary-button"
-          >Learn More <i class="fa-solid fa-right-long"></i
-        ></a>
+  </div>
+</section>
+
+<!-- Community Section - New addition -->
+<section class="py-5">
+  <div class="container">
+    <div class="row align-items-center">
+      <div class="col-lg-6 mb-4 mb-lg-0">
+        <h2 style="font-size: 2rem;">Connect with Other Farmers</h2>
+        <p class="mb-4" style="font-size: 1.1rem;">Join our farming community to share experiences, ask questions, and learn from other farmers in your area.</p>
+        <div class="d-flex mb-4">
+          <div class="mr-3">
+            <i class="fas fa-comments text-primary" style="font-size: 2rem;"></i>
+          </div>
+          <div>
+            <h5>Ask Questions</h5>
+            <p>Get answers from experienced farmers</p>
+          </div>
+        </div>
+        <div class="d-flex mb-4">
+          <div class="mr-3">
+            <i class="fas fa-lightbulb text-warning" style="font-size: 2rem;"></i>
+          </div>
+          <div>
+            <h5>Share Your Knowledge</h5>
+            <p>Help other farmers with your experience</p>
+          </div>
+        </div>
+        <a href="{% url 'post_list' %}" class="btn btn-primary btn-lg">
+          <i class="fas fa-users mr-2"></i>Join Community
+        </a>
       </div>
-      <!-- Community -->
-      <div class="features-card flex">
-        <img
-          src="{% static 'images/cummunityLogo.jpg' %}"
-          alt=""
-          style="height: 100px"
-        />
-        <h3>Community</h3>
-        <p>See Peoples in your area and Peoples With similar interests</p>
-        <a href="#" class="secondary-button"
-          >Learn More <i class="fa-solid fa-right-long"></i
-        ></a>
+      <div class="col-lg-6">
+        <img src="{% static 'images/cummunityLogo.jpg' %}" class="img-fluid rounded shadow" alt="Farmer community">
       </div>
-      <!-- Soil Analysis & Crop recommendation -->
-      <div class="features-card flex">
-        <img
-          src="{% static 'images/soilAnalysisLogo.png' %}"
-          alt=""
-          style="height: 100px; border-radius: 50%"
-        />
-        <h3>Soil Analysis & Crop recommendation</h3>
-        <p>
-          Check health of Your Soil by Clicking Photo of Your Health card
-        </p>
-        <a href="{% url 'croprecommendation' %}" class="secondary-button"
-          >Learn More <i class="fa-solid fa-right-long"></i
-        ></a>
-      </div>
-      <!-- Government Schemes -->
-      <div class="features-card flex">
-        <img 
-          src="{% static 'images/governmentSchemesLogo.webp' %}"
-          alt=""
-          style="height: 100px; border-radius: 50%"
-        
-        />
-        <h3>Government Schemes</h3>
-        <p>Check the government schemes For which you are eligible</p>
-        <a href="https://agriwelfare.gov.in/en/Major" class="secondary-button"
-          >Learn More <i class="fa-solid fa-right-long"></i
-        ></a>
-      </div>
-      <!-- Farmers To Customer Delivery -->
-      <div class="features-card flex">
-        <img
-          src="{% static 'images/accountsLogo.png' %}"
-          alt=""
-          style="height: 100px; border-radius: 100%"
-        />
-        <h3>Farmers To Customer Delivery</h3>
-        <p>Check for any customer in your area</p>
-        <a href="#" class="secondary-button"
-          >Learn More <i class="fa-solid fa-right-long"></i
-        ></a>
-      </div>
-      <!-- Weather Forecast -->
-      <div class="features-card flex">
-        <img
-          src="{% static 'images/weatherForecastLogo.png' %}"
-          alt=""
-          style="height: 100px; border-radius: 50%"
-        />
-        <h3>Weather Forecast</h3>
-        <p>Check the weather in your area</p>
-        <a href="{% url 'weather' %}" class="secondary-button"
-          >Learn More <i class="fa-solid fa-right-long"></i
-        ></a>
-      </div>
-      <!-- End of Feature Cards -->
     </div>
   </div>
 </section>
 
-<!-- Big features Section -->
-
-<!-- Making Growth -->
-<section class="big-features-section">
-  <div class="container flex big-feature-container">
-    <div class="feature-image">
-      <img
-        src="{% static 'images/tractorLogo.png' %}"
-        alt=""
-        style="height: 300px"
-      />
-    </div>
-    <div class="feature-desc flex">
-      <h4>Making Growth</h4>
-      <h2>AI will boost Your Income</h2>
-      <p>
-        Discover the power of AI to revolutionize your yields at Farm Mate.
-        Our AI-driven solutions analyze data to optimize crop growth,
-        predict disease outbreaks, and suggest personalized strategies for
-        maximum productivity. Embrace innovation and unlock the full
-        potential of your farm with AI-enhanced farming techniques,
-        exclusively at Farm Mate.
-      </p>
-    </div>
+<!-- Start Now - Clear call to action -->
+<section class="py-5 bg-primary text-white">
+  <div class="container text-center">
+    <h2 class="mb-4" style="font-size: 2.2rem;">Ready to Improve Your Farm?</h2>
+    <p class="lead mb-4" style="font-size: 1.3rem;">Farm-Mate is free to use and helps you make better farming decisions.</p>
+    <a href="{% url 'croprecommendation' %}" class="btn btn-lg btn-light text-primary btn-large-text">
+      <i class="fas fa-seedling mr-2"></i>Start Now
+    </a>
   </div>
 </section>
-
-<!-- Farming Organically -->
-<section class="big-features-section">
-  <div class="container flex big-feature-container">
-    <div class="feature-desc flex">
-      <h4>Farming Organically</h4>
-      <h2>Organic Farming will Increase the Health of Population</h2>
-      <p>
-        Embrace the purity of nature with Farm Mate's Organic Farming
-        section. Dive into a world where sustainable practices and natural
-        solutions reign supreme. Explore our curated resources, expert
-        advice, and innovative tools designed specifically for organic
-        farming. Let Farm Mate be your guide as you cultivate healthy,
-        nutrient-rich crops while nurturing the soil and ecosystem for
-        generations to come.
-      </p>
-    </div>
-    <div class="feature-image">
-      <img
-        src="{% static 'images/organicFarming.jpg' %}"
-        alt=""
-        style="height: 300px"
-      />
-    </div>
-  </div>
-</section>
-
-<!-- Protect Environment -->
-<section class="big-features-section">
-  <div class="container flex big-feature-container">
-    <div class="feature-image">
-      <img
-        src="{% static 'images/sustanableEnvoirnment.jpg' %}"
-        alt=""
-        style="height: 300px"
-      />
-    </div>
-    <div class="feature-desc flex">
-      <h4>Protect Environment</h4>
-      <h2>AI helps to minimize the Harsh impact on environment</h2>
-      <p>
-        Experience the eco-conscious revolution with Farm Mate's AI
-        solutions tailored to minimize environmental impact. Harness the
-        power of artificial intelligence to optimize resource utilization,
-        reduce chemical usage, and foster sustainable farming practices.
-        Join us in safeguarding our planet while maximizing agricultural
-        productivity, only with Farm Mate.
-      </p>
-    </div>
-  </div>
-</section>
-</div>  <!-- Closing content block -->
 {% endblock %}

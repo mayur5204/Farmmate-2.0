@@ -1,21 +1,219 @@
 {% extends 'base.html' %}
 {% load static %}
-{% block title %}About Us{% endblock %}
+
+{% block title %}About Farm-Mate{% endblock %}
 
 {% block content %}
-<div class="container">
-  <h1 class="text-center mb-4">About Us</h1>
-  <div class="card">
-    <div class="card-body">
-      <h5 class="card-title">Farm-Mate</h5>
-      <p class="card-text">
-        Farm-Mate is a website that offers intelligent solutions to maximize
-        yields, optimize resources, and make data-driven decisions for a smarter
-        future in agriculture. We empower farmers with AI and ML to help them
-        farm intelligently.
-      </p>
+<!-- Hero Section -->
+<section class="py-5 bg-primary text-white text-center">
+  <div class="container">
+    <h1><i class="fas fa-users mr-2"></i>About Farm-Mate</h1>
+    <p class="lead">Smart farming solutions powered by data and artificial intelligence</p>
+  </div>
+</section>
+
+<!-- Mission & Vision Section -->
+<section class="py-5">
+  <div class="container">
+    <div class="row">
+      <div class="col-lg-6 mb-4">
+        <div class="farmmate-card h-100">
+          <div class="farmmate-card-header">
+            <h3 class="m-0"><i class="fas fa-bullseye mr-2"></i>Our Mission</h3>
+          </div>
+          <div class="farmmate-card-body">
+            <p class="lead">To revolutionize farming through intelligent technology and data-driven insights</p>
+            <p>Farm-Mate is dedicated to empowering farmers with cutting-edge tools that optimize resources, maximize yields, and promote sustainable agricultural practices. We believe that by combining traditional farming knowledge with modern technology, we can help farmers overcome challenges and thrive in an ever-changing environment.</p>
+            <!-- Image removed -->
+          </div>
+        </div>
+      </div>
+      
+      <div class="col-lg-6 mb-4">
+        <div class="farmmate-card h-100">
+          <div class="farmmate-card-header">
+            <h3 class="m-0"><i class="fas fa-eye mr-2"></i>Our Vision</h3>
+          </div>
+          <div class="farmmate-card-body">
+            <p class="lead">Creating a world where farming is more productive, profitable, and sustainable</p>
+            <p>We envision a future where farmers of all scales can access the benefits of artificial intelligence and machine learning to make informed decisions about their crops and land. By breaking down technological barriers and providing accessible tools, we aim to contribute to global food security while promoting environmentally responsible farming methods.</p>
+            <!-- Image removed -->
+          </div>
+        </div>
+      </div>
     </div>
   </div>
-</div>
+</section>
 
+<!-- Our Story Section -->
+<section class="py-5 bg-light">
+  <div class="container">
+    <div class="text-center mb-5">
+      <h2 class="mb-3">Our Story</h2>
+      <div class="mx-auto" style="width: 100px; height: 4px; background-color: var(--primary);"></div>
+    </div>
+    
+    <div class="row justify-content-center">
+      <div class="col-lg-8">
+        <div class="farmmate-card">
+          <div class="farmmate-card-body">
+            <div class="d-flex align-items-center mb-4">
+                <!-- Image removed -->
+              <div>
+                <h3 class="mb-0">From Concept to Reality</h3>
+                <p class="text-muted mb-0">How Farm-Mate was born</p>
+              </div>
+            </div>
+            
+            <p>Farm-Mate began in 2023 as a research project exploring how machine learning could be applied to agricultural challenges. A team of agricultural scientists and software engineers came together with a shared passion for using technology to solve real-world farming problems.</p>
+            
+            <p>After months of research, data collection, and algorithm development, we created our first crop recommendation system. The positive feedback from early adopters encouraged us to expand our platform to include weather forecasting, resource management, and other essential tools for modern farmers.</p>
+            
+            <p>Today, Farm-Mate has grown into a comprehensive agricultural platform serving thousands of farmers worldwide, but our core mission remains unchanged: to make advanced agricultural technology accessible to farmers everywhere.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Values Section -->
+<section class="py-5">
+  <div class="container">
+    <div class="text-center mb-5">
+      <h2 class="mb-3">Our Core Values</h2>
+      <div class="mx-auto" style="width: 100px; height: 4px; background-color: var(--primary);"></div>
+    </div>
+    
+    <div class="row">
+      <div class="col-md-3 mb-4">
+        <div class="farmmate-card h-100 text-center">
+          <div class="farmmate-card-body">
+            <div class="mb-3">
+              <i class="fas fa-lightbulb fa-3x text-primary"></i>
+            </div>
+            <h4>Innovation</h4>
+            <p>Constantly pushing the boundaries of what's possible in agricultural technology</p>
+          </div>
+        </div>
+      </div>
+      
+      <div class="col-md-3 mb-4">
+        <div class="farmmate-card h-100 text-center">
+          <div class="farmmate-card-body">
+            <div class="mb-3">
+              <i class="fas fa-leaf fa-3x text-success"></i>
+            </div>
+            <h4>Sustainability</h4>
+            <p>Promoting farming practices that protect our environment for future generations</p>
+          </div>
+        </div>
+      </div>
+      
+      <div class="col-md-3 mb-4">
+        <div class="farmmate-card h-100 text-center">
+          <div class="farmmate-card-body">
+            <div class="mb-3">
+              <i class="fas fa-users fa-3x text-secondary"></i>
+            </div>
+            <h4>Community</h4>
+            <p>Building connections between farmers to share knowledge and experiences</p>
+          </div>
+        </div>
+      </div>
+      
+      <div class="col-md-3 mb-4">
+        <div class="farmmate-card h-100 text-center">
+          <div class="farmmate-card-body">
+            <div class="mb-3">
+              <i class="fas fa-chart-line fa-3x text-warning"></i>
+            </div>
+            <h4>Reliability</h4>
+            <p>Providing accurate, trustworthy data that farmers can depend on</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Team Section -->
+<section class="py-5 bg-light">
+  <div class="container text-center">
+    <div class="row justify-content-center">
+      <div class="col-lg-8">
+        <div class="text-center mb-5">
+          <h2 class="mb-3">Meet Our Team</h2>
+          <div class="mx-auto" style="width: 100px; height: 4px; background-color: var(--primary);"></div>
+          <p class="mt-3">The passionate people behind Farm-Mate</p>
+        </div>
+      </div>
+    </div>
+    
+    <div class="row">
+      <div class="col-lg-4 col-md-6 mb-4">
+        <div class="farmmate-card h-100 text-center">
+          <div class="farmmate-card-body">
+            <!-- Image removed -->
+            <h4>Dr. Anil Patel</h4>
+            <p class="text-primary mb-2">Agricultural Scientist</p>
+            <p>With over 15 years in agricultural research, Dr. Patel leads our crop recommendation algorithms.</p>
+            <div class="social-links mt-3">
+              <a href="#" class="text-secondary mr-2"><i class="fab fa-linkedin fa-lg"></i></a>
+              <a href="#" class="text-secondary mr-2"><i class="fab fa-twitter fa-lg"></i></a>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="col-lg-4 col-md-6 mb-4">
+        <div class="farmmate-card h-100 text-center">
+          <div class="farmmate-card-body">
+            <!-- Image removed -->
+            <h4>Priya Sharma</h4>
+            <p class="text-primary mb-2">Lead Developer</p>
+            <p>Priya specializes in machine learning systems and leads our technical development team.</p>
+            <div class="social-links mt-3">
+              <a href="#" class="text-secondary mr-2"><i class="fab fa-github fa-lg"></i></a>
+              <a href="#" class="text-secondary mr-2"><i class="fab fa-linkedin fa-lg"></i></a>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="col-lg-4 col-md-6 mb-4">
+        <div class="farmmate-card h-100 text-center">
+          <div class="farmmate-card-body">
+            <!-- Image removed -->
+            <h4>Rahul Verma</h4>
+            <p class="text-primary mb-2">Meteorology Expert</p>
+            <p>With a background in meteorology, Rahul ensures our weather forecasting is accurate and reliable.</p>
+            <div class="social-links mt-3">
+              <a href="#" class="text-secondary mr-2"><i class="fab fa-linkedin fa-lg"></i></a>
+              <a href="#" class="text-secondary mr-2"><i class="fab fa-twitter fa-lg"></i></a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Call to Action -->
+<section class="py-5 bg-primary text-white text-center">
+  <div class="container">
+    <h2>Join the Farm-Mate Community</h2>
+    <p class="lead mb-4">Connect with farmers and agricultural experts from around the world</p>
+    <div class="row justify-content-center">
+      <div class="col-md-6">
+        <a href="{% url 'register' %}" class="btn btn-lg btn-accent mb-2 mb-md-0 mr-md-3">
+          <i class="fas fa-user-plus mr-2"></i>Sign Up Now
+        </a>
+        <a href="{% url 'help' %}" class="btn btn-lg btn-outline-light">
+          <i class="fas fa-question-circle mr-2"></i>Learn More
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
 {% endblock %}

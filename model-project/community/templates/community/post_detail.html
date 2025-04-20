@@ -1,0 +1,408 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ post.title }} - Farm-Mate Community{% endblock %}
+
+{% block extra_css %}
+<style>
+    .comment-container {
+        margin-left: 35px;
+    }
+    .comment {
+        margin-bottom: 15px;
+        border-left: 3px solid #e9ecef;
+        padding-left: 15px;
+    }
+    .comment-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 5px;
+    }
+    .comment-actions {
+        display: flex;
+        align-items: center;
+    }
+    .comment-form {
+        display: none;
+    }
+    .avatar-small {
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: bold;
+        color: #fff;
+    }
+    .avatar-medium {
+        width: 48px;
+        height: 48px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: bold;
+        color: #fff;
+        font-size: 1.2rem;
+    }
+    .category-badge {
+        font-size: 0.8rem;
+    }
+    .like-btn {
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+    .like-btn.liked .far.fa-heart {
+        display: none;
+    }
+    .like-btn:not(.liked) .fas.fa-heart {
+        display: none;
+    }
+    .like-btn.liked {
+        color: #e74c3c;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+    <div class="row">
+        <!-- Main content - post detail -->
+        <div class="col-lg-8 mb-4">
+            <!-- Breadcrumb navigation -->
+            <nav aria-label="breadcrumb" class="mb-4">
+                <ol class="breadcrumb bg-light">
+                    <li class="breadcrumb-item"><a href="{% url 'homepage' %}">Home</a></li>
+                    <li class="breadcrumb-item"><a href="{% url 'post_list' %}">Community</a></li>
+                    {% if post.category %}
+                    <li class="breadcrumb-item">
+                        <a href="{% url 'post_list' %}?category={{ post.category }}">
+                            {% if post.category == 'general' %}General Discussion{% endif %}
+                            {% if post.category == 'crop_disease' %}Crop Diseases{% endif %}
+                            {% if post.category == 'farming_tips' %}Farming Tips{% endif %}
+                            {% if post.category == 'market_info' %}Market Information{% endif %}
+                            {% if post.category == 'tech' %}Agricultural Technology{% endif %}
+                            {% if post.category == 'question' %}Questions{% endif %}
+                        </a>
+                    </li>
+                    {% endif %}
+                    <li class="breadcrumb-item active" aria-current="page">{{ post.title|truncatechars:30 }}</li>
+                </ol>
+            </nav>
+
+            <!-- Post card -->
+            <div class="card shadow mb-4">
+                <div class="card-header bg-light d-flex justify-content-between align-items-center">
+                    <!-- Post author info -->
+                    <div class="d-flex align-items-center">
+                        <div class="avatar-medium bg-primary mr-3">{{ post.author.username.0|upper }}</div>
+                        <div>
+                            <h6 class="mb-0">{{ post.author.username }}</h6>
+                            <small class="text-muted">Posted on {{ post.created_at|date:"F d, Y" }} at {{ post.created_at|time:"h:i A" }}</small>
+                        </div>
+                    </div>
+                    
+                    <!-- Category badge -->
+                    <span class="badge 
+                        {% if post.category == 'general' %}badge-secondary{% endif %}
+                        {% if post.category == 'crop_disease' %}badge-danger{% endif %}
+                        {% if post.category == 'farming_tips' %}badge-success{% endif %}
+                        {% if post.category == 'market_info' %}badge-info{% endif %}
+                        {% if post.category == 'tech' %}badge-primary{% endif %}
+                        {% if post.category == 'question' %}badge-warning{% endif %}
+                        category-badge">
+                        {% if post.category == 'general' %}General Discussion{% endif %}
+                        {% if post.category == 'crop_disease' %}Crop Disease{% endif %}
+                        {% if post.category == 'farming_tips' %}Farming Tip{% endif %}
+                        {% if post.category == 'market_info' %}Market Info{% endif %}
+                        {% if post.category == 'tech' %}Technology{% endif %}
+                        {% if post.category == 'question' %}Question{% endif %}
+                    </span>
+                </div>
+                
+                <div class="card-body">
+                    <!-- Post title and content -->
+                    <h3 class="card-title">{{ post.title }}</h3>
+                    <div class="card-text mb-4">
+                        {{ post.content|linebreaks }}
+                    </div>
+                    
+                    <!-- Post image if present -->
+                    {% if post.image %}
+                    <div class="post-image mb-4">
+                        <img src="{{ post.image.url }}" alt="Post image" class="img-fluid rounded">
+                    </div>
+                    {% endif %}
+                    
+                    <!-- Post actions -->
+                    <div class="post-actions d-flex align-items-center justify-content-between mt-4 pt-3 border-top">
+                        <div>
+                            <button class="btn btn-sm like-btn {% if user in post.likes.all %}liked{% endif %}" data-post-id="{{ post.id }}">
+                                <i class="far fa-heart"></i>
+                                <i class="fas fa-heart"></i>
+                                <span class="like-count">{{ post.get_like_count }}</span> likes
+                            </button>
+                            
+                            <!-- Comment button with JavaScript onClick handler -->
+                            <button class="btn btn-sm btn-outline-secondary ml-2 js-comment-btn" data-url="#comments">
+                                <i class="far fa-comment"></i> {{ post.get_comment_count }} comments
+                            </button>
+                        </div>
+                        
+                        <!-- Edit/Delete buttons for author or admin -->
+                        {% if user == post.author or user.is_staff %}
+                        <div>
+                            <a href="{% url 'edit_post' post.pk %}" class="btn btn-sm btn-outline-primary">
+                                <i class="fas fa-edit"></i> Edit
+                            </a>
+                            <a href="{% url 'delete_post' post.pk %}" class="btn btn-sm btn-outline-danger ml-2">
+                                <i class="fas fa-trash"></i> Delete
+                            </a>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Comments section -->
+            <div class="card shadow" id="comments">
+                <div class="card-header bg-light">
+                    <h5 class="mb-0"><i class="far fa-comments mr-2"></i>Comments ({{ post.get_comment_count }})</h5>
+                </div>
+                
+                <div class="card-body">
+                    <!-- Comment form -->
+                    {% if user.is_authenticated %}
+                    <div class="mb-4">
+                        <form method="POST" action="{% url 'post_detail' post.pk %}">
+                            {% csrf_token %}
+                            <div class="form-group">
+                                {{ comment_form.content }}
+                                <small class="text-muted">Share your thoughts about this post...</small>
+                            </div>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="far fa-paper-plane mr-2"></i>Add Comment
+                            </button>
+                        </form>
+                    </div>
+                    {% else %}
+                    <div class="alert alert-info mb-4">
+                        <i class="fas fa-info-circle mr-2"></i>Please <a href="{% url 'login' %}?next={{ request.path }}">log in</a> to comment on this post.
+                    </div>
+                    {% endif %}
+                    
+                    <!-- Comments display -->
+                    {% if comments %}
+                    <div class="comments-list mt-4">
+                        {% for comment in comments %}
+                        <div class="comment" id="comment-{{ comment.id }}">
+                            <div class="comment-header">
+                                <div class="d-flex align-items-center">
+                                    <div class="avatar-small bg-secondary mr-2">{{ comment.author.username.0|upper }}</div>
+                                    <div>
+                                        <h6 class="mb-0">{{ comment.author.username }}</h6>
+                                        <small class="text-muted">{{ comment.created_at|date:"M d, Y" }} at {{ comment.created_at|time:"h:i A" }}</small>
+                                    </div>
+                                </div>
+                                
+                                <!-- Comment actions -->
+                                <div class="comment-actions">
+                                    {% if user.is_authenticated %}
+                                    <button class="btn btn-sm btn-link reply-btn" data-comment-id="{{ comment.id }}">
+                                        <i class="fas fa-reply"></i> Reply
+                                    </button>
+                                    {% endif %}
+                                    
+                                    {% if user == comment.author or user.is_staff %}
+                                    <form method="POST" action="{% url 'delete_comment' comment.pk %}" class="d-inline">
+                                        {% csrf_token %}
+                                        <button type="submit" class="btn btn-sm btn-link text-danger">
+                                            <i class="fas fa-trash-alt"></i> Delete
+                                        </button>
+                                    </form>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            
+                            <!-- Comment content -->
+                            <div class="comment-content mt-2">
+                                <p>{{ comment.content|linebreaks }}</p>
+                            </div>
+                            
+                            <!-- Reply form (initially hidden) -->
+                            {% if user.is_authenticated %}
+                            <div class="comment-form" id="reply-form-{{ comment.id }}">
+                                <form method="POST" action="{% url 'post_detail' post.pk %}">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="parent_id" value="{{ comment.id }}">
+                                    <div class="form-group">
+                                        <textarea name="content" class="form-control" rows="2" placeholder="Write your reply..."></textarea>
+                                    </div>
+                                    <button type="submit" class="btn btn-sm btn-primary">
+                                        <i class="far fa-paper-plane mr-2"></i>Reply
+                                    </button>
+                                    <button type="button" class="btn btn-sm btn-outline-secondary cancel-reply-btn" data-comment-id="{{ comment.id }}">
+                                        Cancel
+                                    </button>
+                                </form>
+                            </div>
+                            {% endif %}
+                            
+                            <!-- Nested replies -->
+                            {% if comment.replies.all %}
+                            <div class="comment-container">
+                                {% for reply in comment.replies.all %}
+                                <div class="comment" id="comment-{{ reply.id }}">
+                                    <div class="comment-header">
+                                        <div class="d-flex align-items-center">
+                                            <div class="avatar-small bg-secondary mr-2">{{ reply.author.username.0|upper }}</div>
+                                            <div>
+                                                <h6 class="mb-0">{{ reply.author.username }}</h6>
+                                                <small class="text-muted">{{ reply.created_at|date:"M d, Y" }} at {{ reply.created_at|time:"h:i A" }}</small>
+                                            </div>
+                                        </div>
+                                        
+                                        <!-- Reply actions -->
+                                        {% if user == reply.author or user.is_staff %}
+                                        <div class="comment-actions">
+                                            <form method="POST" action="{% url 'delete_comment' reply.pk %}">
+                                                {% csrf_token %}
+                                                <button type="submit" class="btn btn-sm btn-link text-danger">
+                                                    <i class="fas fa-trash-alt"></i> Delete
+                                                </button>
+                                            </form>
+                                        </div>
+                                        {% endif %}
+                                    </div>
+                                    
+                                    <!-- Reply content -->
+                                    <div class="comment-content mt-2">
+                                        <p>{{ reply.content|linebreaks }}</p>
+                                    </div>
+                                </div>
+                                {% endfor %}
+                            </div>
+                            {% endif %}
+                        </div>
+                        {% endfor %}
+                    </div>
+                    {% else %}
+                    <div class="text-center py-4">
+                        <i class="far fa-comment-dots fa-3x text-muted mb-3"></i>
+                        <p class="text-muted">No comments yet. Be the first to share your thoughts!</p>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        
+        <!-- Sidebar with related info -->
+        <div class="col-lg-4">
+            <!-- Related categories -->
+            <div class="card shadow-sm mb-4">
+                <div class="card-header bg-light">
+                    <h5 class="mb-0"><i class="fas fa-list mr-2"></i>Community Categories</h5>
+                </div>
+                <div class="list-group list-group-flush">
+                    <a href="{% url 'post_list' %}" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+                        <span><i class="fas fa-th-large mr-2"></i>All Topics</span>
+                    </a>
+                    <a href="{% url 'post_list' %}?category=general" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+                        <span><i class="fas fa-comments mr-2"></i>General Discussion</span>
+                    </a>
+                    <a href="{% url 'post_list' %}?category=crop_disease" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+                        <span><i class="fas fa-bug mr-2"></i>Crop Diseases</span>
+                    </a>
+                    <a href="{% url 'post_list' %}?category=farming_tips" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+                        <span><i class="fas fa-lightbulb mr-2"></i>Farming Tips</span>
+                    </a>
+                    <a href="{% url 'post_list' %}?category=market_info" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+                        <span><i class="fas fa-chart-line mr-2"></i>Market Information</span>
+                    </a>
+                    <a href="{% url 'post_list' %}?category=tech" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+                        <span><i class="fas fa-tractor mr-2"></i>Agricultural Technology</span>
+                    </a>
+                    <a href="{% url 'post_list' %}?category=question" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+                        <span><i class="fas fa-question-circle mr-2"></i>Questions</span>
+                    </a>
+                </div>
+            </div>
+            
+            <!-- Community guidelines -->
+            <div class="card shadow-sm">
+                <div class="card-body bg-light">
+                    <h5 class="card-title"><i class="fas fa-info-circle mr-2"></i>Community Guidelines</h5>
+                    <ul class="pl-3 mb-0">
+                        <li>Be respectful to others</li>
+                        <li>Share accurate information</li>
+                        <li>Stay on topic</li>
+                        <li>Avoid self-promotion</li>
+                        <li>Use appropriate language</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    $(document).ready(function() {
+        // Reply form display toggle
+        $('.reply-btn').on('click', function() {
+            var commentId = $(this).data('comment-id');
+            $('#reply-form-' + commentId).toggle();
+        });
+        
+        // Cancel reply button
+        $('.cancel-reply-btn').on('click', function() {
+            var commentId = $(this).data('comment-id');
+            $('#reply-form-' + commentId).hide();
+        });
+        
+        // Like post functionality with AJAX
+        $('.like-btn').on('click', function() {
+            var postId = $(this).data('post-id');
+            var likeBtn = $(this);
+            
+            $.ajax({
+                url: '/community/post/' + postId + '/like/',
+                type: 'POST',
+                dataType: 'json',
+                data: {
+                    'csrfmiddlewaretoken': '{{ csrf_token }}'
+                },
+                success: function(data) {
+                    // Update like count
+                    likeBtn.find('.like-count').text(data.likes_count);
+                    
+                    // Toggle liked class
+                    if (data.liked) {
+                        likeBtn.addClass('liked');
+                    } else {
+                        likeBtn.removeClass('liked');
+                    }
+                },
+                error: function(xhr, status, error) {
+                    // If user is not authenticated, redirect to login
+                    if (xhr.status == 403) {
+                        window.location.href = '{% url "login" %}?next={{ request.path }}';
+                    }
+                    console.error("Error: " + error);
+                }
+            });
+        });
+
+        // Scroll to comments section on comment button click
+        $('.js-comment-btn').on('click', function() {
+            var url = $(this).data('url');
+            $('html, body').animate({
+                scrollTop: $(url).offset().top
+            }, 500);
+        });
+    });
+</script>
+{% endblock %}

@@ -1,0 +1,236 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Crop Recommendation System{% endblock %}
+
+{% block extra_css %}
+<style>
+  .input-range-container {
+    padding: 10px 0;
+  }
+  .range-value {
+    font-weight: bold;
+    color: var(--primary);
+  }
+  .parameter-card {
+    transition: all 0.3s ease;
+    border-left: 4px solid transparent;
+  }
+  .parameter-card:hover {
+    border-left-color: var(--primary);
+  }
+  .parameter-icon {
+    font-size: 2rem;
+    color: var(--primary);
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="py-5 bg-primary text-white text-center">
+  <div class="container">
+    <h1><i class="fas fa-seedling mr-2"></i>Crop Recommendation System</h1>
+    <p class="lead">Enter your soil and environmental parameters to get personalized crop recommendations</p>
+  </div>
+</section>
+
+<div class="container py-5">
+  <div class="row">
+    <div class="col-lg-4 mb-4">
+      <div class="farmmate-card h-100">
+        <div class="farmmate-card-header">
+          <h4 class="m-0"><i class="fas fa-info-circle mr-2"></i>How It Works</h4>
+        </div>
+        <div class="farmmate-card-body">
+          <p>Our recommendation system uses machine learning algorithms to analyze soil conditions and environmental factors to suggest the most suitable crops for your land.</p>
+          
+          <h5><i class="fas fa-list-ol mr-2"></i>Follow These Steps:</h5>
+          <ol>
+            <li>Enter your soil's NPK values (Nitrogen, Phosphorus, Potassium)</li>
+            <li>Add environmental factors (Temperature, Humidity, pH, Rainfall)</li>
+            <li>Submit the form to receive your personalized crop recommendation</li>
+          </ol>
+          
+          <div class="alert alert-info">
+            <i class="fas fa-lightbulb mr-2"></i>Tip: For accurate results, use recent soil test data when available.
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="col-lg-8">
+      <div class="farmmate-card">
+        <div class="farmmate-card-header">
+          <h4 class="m-0"><i class="fas fa-edit mr-2"></i>Enter Your Parameters</h4>
+        </div>
+        <div class="farmmate-card-body">
+          <form action="{% url 'result' %}" method="POST" id="cropRecommendationForm">
+            {% csrf_token %}
+            
+            <!-- Soil Parameters Section -->
+            <h5 class="mb-3"><i class="fas fa-layer-group text-primary mr-2"></i>Soil Parameters</h5>
+            
+            <div class="row mb-4">
+              <div class="col-md-4 mb-3">
+                <div class="farmmate-card parameter-card h-100">
+                  <div class="farmmate-card-body">
+                    <div class="text-center mb-2">
+                      <i class="fas fa-leaf parameter-icon"></i>
+                    </div>
+                    <label for="nitrogen" class="font-weight-bold">Nitrogen (N)</label>
+                    <div class="input-range-container">
+                      <input type="range" class="custom-range" id="nitrogen" name="nitrogen" min="0" max="140" step="1" value="50" oninput="updateNitrogenValue(this.value)">
+                      <div class="text-center"><span id="nitrogenValue" class="range-value">50</span> mg/kg</div>
+                    </div>
+                    <small class="form-text text-muted">Typical range: 0-140 mg/kg</small>
+                  </div>
+                </div>
+              </div>
+              
+              <div class="col-md-4 mb-3">
+                <div class="farmmate-card parameter-card h-100">
+                  <div class="farmmate-card-body">
+                    <div class="text-center mb-2">
+                      <i class="fas fa-flask parameter-icon"></i>
+                    </div>
+                    <label for="phosphorus" class="font-weight-bold">Phosphorus (P)</label>
+                    <div class="input-range-container">
+                      <input type="range" class="custom-range" id="phosphorus" name="phosphorus" min="5" max="145" step="1" value="50" oninput="updatePhosphorusValue(this.value)">
+                      <div class="text-center"><span id="phosphorusValue" class="range-value">50</span> mg/kg</div>
+                    </div>
+                    <small class="form-text text-muted">Typical range: 5-145 mg/kg</small>
+                  </div>
+                </div>
+              </div>
+              
+              <div class="col-md-4 mb-3">
+                <div class="farmmate-card parameter-card h-100">
+                  <div class="farmmate-card-body">
+                    <div class="text-center mb-2">
+                      <i class="fas fa-vial parameter-icon"></i>
+                    </div>
+                    <label for="potassium" class="font-weight-bold">Potassium (K)</label>
+                    <div class="input-range-container">
+                      <input type="range" class="custom-range" id="potassium" name="potassium" min="5" max="205" step="1" value="50" oninput="updatePotassiumValue(this.value)">
+                      <div class="text-center"><span id="potassiumValue" class="range-value">50</span> mg/kg</div>
+                    </div>
+                    <small class="form-text text-muted">Typical range: 5-205 mg/kg</small>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <!-- Environmental Parameters Section -->
+            <h5 class="mb-3"><i class="fas fa-cloud-sun text-primary mr-2"></i>Environmental Parameters</h5>
+            
+            <div class="row">
+              <div class="col-md-6 mb-3">
+                <div class="farmmate-card parameter-card h-100">
+                  <div class="farmmate-card-body">
+                    <div class="text-center mb-2">
+                      <i class="fas fa-temperature-high parameter-icon"></i>
+                    </div>
+                    <label for="temperature" class="font-weight-bold">Temperature</label>
+                    <div class="input-range-container">
+                      <input type="range" class="custom-range" id="temperature" name="temperature" min="0" max="45" step="0.1" value="25" oninput="updateTemperatureValue(this.value)">
+                      <div class="text-center"><span id="temperatureValue" class="range-value">25</span> °C</div>
+                    </div>
+                    <small class="form-text text-muted">Typical range: 0-45 °C</small>
+                  </div>
+                </div>
+              </div>
+              
+              <div class="col-md-6 mb-3">
+                <div class="farmmate-card parameter-card h-100">
+                  <div class="farmmate-card-body">
+                    <div class="text-center mb-2">
+                      <i class="fas fa-tint parameter-icon"></i>
+                    </div>
+                    <label for="humidity" class="font-weight-bold">Humidity</label>
+                    <div class="input-range-container">
+                      <input type="range" class="custom-range" id="humidity" name="humidity" min="0" max="100" step="1" value="65" oninput="updateHumidityValue(this.value)">
+                      <div class="text-center"><span id="humidityValue" class="range-value">65</span> %</div>
+                    </div>
+                    <small class="form-text text-muted">Typical range: 0-100 %</small>
+                  </div>
+                </div>
+              </div>
+              
+              <div class="col-md-6 mb-3">
+                <div class="farmmate-card parameter-card h-100">
+                  <div class="farmmate-card-body">
+                    <div class="text-center mb-2">
+                      <i class="fas fa-balance-scale parameter-icon"></i>
+                    </div>
+                    <label for="ph" class="font-weight-bold">pH Level</label>
+                    <div class="input-range-container">
+                      <input type="range" class="custom-range" id="ph" name="ph" min="3" max="10" step="0.1" value="6.5" oninput="updatePhValue(this.value)">
+                      <div class="text-center"><span id="phValue" class="range-value">6.5</span></div>
+                    </div>
+                    <small class="form-text text-muted">Typical range: 3-10 (7 is neutral)</small>
+                  </div>
+                </div>
+              </div>
+              
+              <div class="col-md-6 mb-3">
+                <div class="farmmate-card parameter-card h-100">
+                  <div class="farmmate-card-body">
+                    <div class="text-center mb-2">
+                      <i class="fas fa-cloud-rain parameter-icon"></i>
+                    </div>
+                    <label for="rainfall" class="font-weight-bold">Rainfall</label>
+                    <div class="input-range-container">
+                      <input type="range" class="custom-range" id="rainfall" name="rainfall" min="0" max="300" step="1" value="100" oninput="updateRainfallValue(this.value)">
+                      <div class="text-center"><span id="rainfallValue" class="range-value">100</span> mm</div>
+                    </div>
+                    <small class="form-text text-muted">Typical range: 0-300 mm</small>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="text-center mt-4">
+              <button type="submit" class="btn btn-lg btn-primary">
+                <i class="fas fa-search mr-2"></i>Get Crop Recommendation
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+  function updateNitrogenValue(val) {
+    document.getElementById("nitrogenValue").textContent = val;
+  }
+  
+  function updatePhosphorusValue(val) {
+    document.getElementById("phosphorusValue").textContent = val;
+  }
+  
+  function updatePotassiumValue(val) {
+    document.getElementById("potassiumValue").textContent = val;
+  }
+  
+  function updateTemperatureValue(val) {
+    document.getElementById("temperatureValue").textContent = val;
+  }
+  
+  function updateHumidityValue(val) {
+    document.getElementById("humidityValue").textContent = val;
+  }
+  
+  function updatePhValue(val) {
+    document.getElementById("phValue").textContent = val;
+  }
+  
+  function updateRainfallValue(val) {
+    document.getElementById("rainfallValue").textContent = val;
+  }
+</script>
+{% endblock %}

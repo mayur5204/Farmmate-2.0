@@ -1,6 +1,5 @@
-
-
 from pathlib import Path
+import os
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -10,12 +9,15 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-p3x)s!#!s1!ky1@4l1a4y_z9&_4=jt+ztz5bix&o*+)lc+gd)0'
+# Use environment variable or defaults to a placeholder during development
+SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY', 'django-insecure-p3x)s!#!s1!ky1@4l1a4y_z9&_4=jt+ztz5bix&o*+)lc+gd)0')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+# Set DEBUG to False in production by setting the DJANGO_DEBUG environment variable
+DEBUG = os.environ.get('DJANGO_DEBUG', 'False') == 'True'
 
-ALLOWED_HOSTS = []
+# Updated to include PythonAnywhere domain
+ALLOWED_HOSTS = ['localhost', '127.0.0.1', '.pythonanywhere.com', '.ngrok-free.app'] + os.environ.get('DJANGO_ALLOWED_HOSTS', '').split(',')
 
 
 # Application definition
@@ -28,7 +30,9 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'home',
-
+    'crop_recommendation',
+    'users',
+    'community',  # Add the community app
 ]
 
 MIDDLEWARE = [
@@ -46,7 +50,13 @@ ROOT_URLCONF = 'model.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': ['model/templates', 'home/templates'],
+        'DIRS': [
+            'model/templates', 
+            'home/templates',
+            'crop_recommendation/templates',
+            'users/templates',
+            'community/templates',  # Add community templates
+        ],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -54,6 +64,7 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'django.template.context_processors.media',  # Add media context processor
             ],
         },
     },
@@ -108,12 +119,21 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/5.0/howto/static-files/
 
 STATIC_URL = 'static/'
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
 STATICFILES_DIRS = [
     BASE_DIR / "static",
 ]
 
+# Media files (Images uploaded by users)
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# Login URL
+LOGIN_URL = 'login'
+LOGIN_REDIRECT_URL = 'homepage'

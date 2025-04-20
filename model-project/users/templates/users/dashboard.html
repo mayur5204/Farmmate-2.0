@@ -1,0 +1,480 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load form_filters %}
+
+{% block title %}My Dashboard - Farm-Mate{% endblock %}
+
+{% block extra_css %}
+<style>
+  .profile-container {
+    background-color: white;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  }
+  
+  .profile-sidebar {
+    border-right: 1px solid #eee;
+  }
+  
+  .profile-nav .nav-link {
+    color: #555;
+    border-radius: 0;
+    padding: 12px 20px;
+    border-left: 4px solid transparent;
+  }
+  
+  .profile-nav .nav-link:hover {
+    background-color: rgba(46, 125, 50, 0.05);
+  }
+  
+  .profile-nav .nav-link.active {
+    background-color: rgba(46, 125, 50, 0.1);
+    color: var(--primary);
+    border-left: 4px solid var(--primary);
+    font-weight: 600;
+  }
+  
+  .dashboard-card {
+    border-radius: 10px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+    transition: all 0.3s;
+  }
+  
+  .dashboard-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 5px 10px rgba(0,0,0,0.1);
+  }
+  
+  .stat-card {
+    padding: 20px;
+    border-radius: 10px;
+    text-align: center;
+  }
+  
+  .stat-icon {
+    font-size: 2.5rem;
+    margin-bottom: 15px;
+    display: inline-block;
+    width: 60px;
+    height: 60px;
+    line-height: 60px;
+    border-radius: 50%;
+  }
+  
+  .bg-leaf {
+    background-color: rgba(46, 125, 50, 0.1);
+    color: var(--primary);
+  }
+  
+  .bg-water {
+    background-color: rgba(3, 169, 244, 0.1);
+    color: #03a9f4;
+  }
+  
+  .bg-temp {
+    background-color: rgba(255, 87, 34, 0.1);
+    color: #ff5722;
+  }
+  
+  .bg-soil {
+    background-color: rgba(121, 85, 72, 0.1);
+    color: #795548;
+  }
+  
+  .crop-card {
+    border: none;
+    transition: transform 0.3s;
+    position: relative;
+    overflow: hidden;
+    border-radius: 10px;
+  }
+  
+  .crop-card:hover {
+    transform: translateY(-5px);
+  }
+  
+  .crop-card .card-body {
+    z-index: 1;
+    position: relative;
+  }
+  
+  .crop-card::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(180deg, rgba(0,0,0,0) 0%, rgba(0,0,0,0.7) 100%);
+    z-index: 0;
+  }
+  
+  .crop-img {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    z-index: -1;
+  }
+  
+  .crop-card .card-title {
+    color: white;
+    font-weight: bold;
+  }
+  
+  .crop-card .card-text {
+    color: rgba(255,255,255,0.9);
+  }
+  
+  .weather-icon {
+    font-size: 3rem;
+    margin-bottom: 0.5rem;
+  }
+  
+  .crops-table img {
+    width: 40px;
+    height: 40px;
+    object-fit: cover;
+    border-radius: 4px;
+  }
+  
+  .progress {
+    height: 10px;
+    border-radius: 5px;
+  }
+  
+  .calendar-event {
+    padding: 8px;
+    border-radius: 4px;
+    margin-bottom: 8px;
+    border-left: 3px solid var(--primary);
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+  <div class="row profile-container">
+    <!-- Sidebar -->
+    <div class="col-md-3 profile-sidebar py-4">
+      <div class="text-center mb-4">
+        <div class="profile-picture-container">
+          <img src="{{ user.profile.profile_picture.url }}" alt="Profile Picture" class="profile-picture">
+        </div>
+        <h5 class="mb-1">{{ user.get_full_name|default:user.username }}</h5>
+        <p class="text-muted mb-3">{{ user.profile.farmer_type|title }} Farmer</p>
+      </div>
+      
+      <ul class="nav flex-column profile-nav">
+        <li class="nav-item">
+          <a class="nav-link {% if active_tab == 'dashboard' %}active{% endif %}" href="{% url 'dashboard' %}">
+            <i class="fas fa-tachometer-alt mr-2"></i> Dashboard
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link {% if active_tab == 'profile' %}active{% endif %}" href="{% url 'profile' %}">
+            <i class="fas fa-user mr-2"></i> My Profile
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="{% url 'croprecommendation' %}">
+            <i class="fas fa-seedling mr-2"></i> Crop Recommendations
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link {% if active_tab == 'settings' %}active{% endif %}" href="{% url 'settings' %}">
+            <i class="fas fa-cog mr-2"></i> Settings
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="{% url 'logout' %}">
+            <i class="fas fa-sign-out-alt mr-2"></i> Logout
+          </a>
+        </li>
+      </ul>
+    </div>
+    
+    <!-- Main Content -->
+    <div class="col-md-9 py-4">
+      <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="mb-0">My Dashboard</h2>
+        <div class="text-muted">
+          <i class="far fa-calendar-alt mr-2"></i>{{ date_today|date:"F j, Y" }}
+        </div>
+      </div>
+      
+      <!-- Farm Stats -->
+      <div class="row mb-4">
+        <div class="col-md-3 col-sm-6 mb-3 mb-md-0">
+          <div class="stat-card dashboard-card bg-white">
+            <div class="stat-icon bg-leaf">
+              <i class="fas fa-seedling"></i>
+            </div>
+            <h5>5</h5>
+            <p class="text-muted mb-0">Active Crops</p>
+          </div>
+        </div>
+        
+        <div class="col-md-3 col-sm-6 mb-3 mb-md-0">
+          <div class="stat-card dashboard-card bg-white">
+            <div class="stat-icon bg-water">
+              <i class="fas fa-tint"></i>
+            </div>
+            <h5>45%</h5>
+            <p class="text-muted mb-0">Soil Moisture</p>
+          </div>
+        </div>
+        
+        <div class="col-md-3 col-sm-6 mb-3 mb-md-0">
+          <div class="stat-card dashboard-card bg-white">
+            <div class="stat-icon bg-temp">
+              <i class="fas fa-temperature-high"></i>
+            </div>
+            <h5>27°C</h5>
+            <p class="text-muted mb-0">Temperature</p>
+          </div>
+        </div>
+        
+        <div class="col-md-3 col-sm-6">
+          <div class="stat-card dashboard-card bg-white">
+            <div class="stat-icon bg-soil">
+              <i class="fas fa-mountain"></i>
+            </div>
+            <h5>6.5 pH</h5>
+            <p class="text-muted mb-0">Soil pH</p>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Dashboard Content -->
+      <div class="row">
+        <!-- Left Column -->
+        <div class="col-lg-8">
+          <!-- Recommended Crops -->
+          <div class="card mb-4 dashboard-card">
+            <div class="card-header bg-white">
+              <div class="d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">Recommended Crops</h5>
+                <a href="{% url 'croprecommendation' %}" class="btn btn-sm btn-outline-primary">View All</a>
+              </div>
+            </div>
+            <div class="card-body p-0">
+              <div class="table-responsive crops-table">
+                <table class="table table-hover mb-0">
+                  <thead>
+                    <tr>
+                      <th>Crop</th>
+                      <th>Suitability</th>
+                      <th>Season</th>
+                      <th>Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>
+                        <div class="d-flex align-items-center">
+                          <img src="{% static 'images/1305.jpg' %}" alt="Wheat" class="mr-2">
+                          <span>Wheat</span>
+                        </div>
+                      </td>
+                      <td>
+                        <div class="progress">
+                          <div class="progress-bar bg-success" role="progressbar" style="width: 92%"></div>
+                        </div>
+                        <small class="text-muted">Excellent (92%)</small>
+                      </td>
+                      <td>Winter</td>
+                      <td>
+                        <button class="btn btn-sm btn-outline-success">
+                          <i class="fas fa-info-circle"></i> Details
+                        </button>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>
+                        <div class="d-flex align-items-center">
+                          <img src="{% static 'images/1305.jpg' %}" alt="Rice" class="mr-2">
+                          <span>Rice</span>
+                        </div>
+                      </td>
+                      <td>
+                        <div class="progress">
+                          <div class="progress-bar bg-success" role="progressbar" style="width: 85%"></div>
+                        </div>
+                        <small class="text-muted">Very Good (85%)</small>
+                      </td>
+                      <td>Monsoon</td>
+                      <td>
+                        <button class="btn btn-sm btn-outline-success">
+                          <i class="fas fa-info-circle"></i> Details
+                        </button>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>
+                        <div class="d-flex align-items-center">
+                          <img src="{% static 'images/1305.jpg' %}" alt="Maize" class="mr-2">
+                          <span>Maize</span>
+                        </div>
+                      </td>
+                      <td>
+                        <div class="progress">
+                          <div class="progress-bar bg-warning" role="progressbar" style="width: 70%"></div>
+                        </div>
+                        <small class="text-muted">Good (70%)</small>
+                      </td>
+                      <td>Summer</td>
+                      <td>
+                        <button class="btn btn-sm btn-outline-success">
+                          <i class="fas fa-info-circle"></i> Details
+                        </button>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Recent Community Activity -->
+          <div class="card dashboard-card mb-4">
+            <div class="card-header bg-white">
+              <div class="d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">Community Activity</h5>
+                <a href="{% url 'post_list' %}" class="btn btn-sm btn-outline-primary">View All</a>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="media mb-4">
+                <img src="{% static 'images/farmerLogo.png' %}" class="mr-3 rounded-circle" width="50" height="50">
+                <div class="media-body">
+                  <div class="d-flex justify-content-between">
+                    <h6 class="mt-0">Farmer John</h6>
+                    <small class="text-muted">2 days ago</small>
+                  </div>
+                  <p>Has anyone had success with organic pest control for tomatoes in this region?</p>
+                  <div>
+                    <button class="btn btn-sm btn-outline-primary">
+                      <i class="far fa-comment mr-1"></i>Reply
+                    </button>
+                  </div>
+                </div>
+              </div>
+              
+              <div class="media">
+                <img src="{% static 'images/farmerLogo.png' %}" class="mr-3 rounded-circle" width="50" height="50">
+                <div class="media-body">
+                  <div class="d-flex justify-content-between">
+                    <h6 class="mt-0">Mary Smith</h6>
+                    <small class="text-muted">1 week ago</small>
+                  </div>
+                  <p>Sharing my success with the new irrigation technique from last month's workshop!</p>
+                  <div>
+                    <button class="btn btn-sm btn-outline-primary">
+                      <i class="far fa-comment mr-1"></i>Reply
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Right Column -->
+        <div class="col-lg-4">
+          <!-- Weather Card -->
+          <div class="card mb-4 dashboard-card">
+            <div class="card-body text-center">
+              <h5 class="card-title">Today's Weather</h5>
+              <div class="weather-icon text-warning">
+                <i class="fas fa-sun"></i>
+              </div>
+              <h3 class="mb-0">27°C</h3>
+              <p class="text-muted">Sunny</p>
+              <hr>
+              <div class="row text-center">
+                <div class="col-4">
+                  <p class="mb-1 text-muted small">Humidity</p>
+                  <p class="mb-0"><i class="fas fa-tint text-info mr-1"></i>65%</p>
+                </div>
+                <div class="col-4">
+                  <p class="mb-1 text-muted small">Wind</p>
+                  <p class="mb-0"><i class="fas fa-wind text-primary mr-1"></i>8 km/h</p>
+                </div>
+                <div class="col-4">
+                  <p class="mb-1 text-muted small">Rainfall</p>
+                  <p class="mb-0"><i class="fas fa-cloud-rain text-secondary mr-1"></i>0 mm</p>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Upcoming Tasks -->
+          <div class="card mb-4 dashboard-card">
+            <div class="card-header bg-white">
+              <h5 class="mb-0">Upcoming Tasks</h5>
+            </div>
+            <div class="card-body">
+              <div class="calendar-event bg-light">
+                <div class="d-flex justify-content-between">
+                  <span><i class="fas fa-calendar-check text-success mr-2"></i>Irrigation</span>
+                  <small>Today</small>
+                </div>
+              </div>
+              
+              <div class="calendar-event bg-light">
+                <div class="d-flex justify-content-between">
+                  <span><i class="fas fa-bug text-danger mr-2"></i>Pest Control</span>
+                  <small>Tomorrow</small>
+                </div>
+              </div>
+              
+              <div class="calendar-event bg-light">
+                <div class="d-flex justify-content-between">
+                  <span><i class="fas fa-seedling text-primary mr-2"></i>Planting</span>
+                  <small>Apr 16</small>
+                </div>
+              </div>
+              
+              <div class="calendar-event bg-light">
+                <div class="d-flex justify-content-between">
+                  <span><i class="fas fa-hand-holding-water text-info mr-2"></i>Fertilization</span>
+                  <small>Apr 18</small>
+                </div>
+              </div>
+            </div>
+            <div class="card-footer bg-white text-center">
+              <button class="btn btn-sm btn-primary">
+                <i class="fas fa-plus mr-1"></i>Add Task
+              </button>
+            </div>
+          </div>
+          
+          <!-- Soil Health Tips -->
+          <div class="card dashboard-card">
+            <div class="card-header bg-white">
+              <h5 class="mb-0">Soil Health Tips</h5>
+            </div>
+            <div class="card-body">
+              <div class="mb-3">
+                <h6><i class="fas fa-check-circle text-success mr-2"></i>Crop Rotation</h6>
+                <p class="small text-muted mb-0">Practice crop rotation to prevent pest buildup and improve soil health.</p>
+              </div>
+              
+              <div class="mb-3">
+                <h6><i class="fas fa-check-circle text-success mr-2"></i>Soil Testing</h6>
+                <p class="small text-muted mb-0">Regular soil testing helps monitor nutrient levels and pH.</p>
+              </div>
+              
+              <div class="mb-0">
+                <h6><i class="fas fa-check-circle text-success mr-2"></i>Cover Crops</h6>
+                <p class="small text-muted mb-0">Plant cover crops during off-seasons to prevent erosion.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

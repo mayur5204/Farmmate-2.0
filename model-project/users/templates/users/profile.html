@@ -1,0 +1,250 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}My Profile - Farm-Mate{% endblock %}
+
+{% block extra_css %}
+<style>
+  .profile-container {
+    background-color: white;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  }
+  
+  .profile-sidebar {
+    border-right: 1px solid #eee;
+  }
+  
+  .profile-nav .nav-link {
+    color: #555;
+    border-radius: 0;
+    padding: 12px 20px;
+    border-left: 4px solid transparent;
+  }
+  
+  .profile-nav .nav-link:hover {
+    background-color: rgba(46, 125, 50, 0.05);
+  }
+  
+  .profile-nav .nav-link.active {
+    background-color: rgba(46, 125, 50, 0.1);
+    color: var(--primary);
+    border-left: 4px solid var(--primary);
+    font-weight: 600;
+  }
+  
+  .profile-picture-container {
+    width: 150px;
+    height: 150px;
+    margin: 0 auto 20px;
+    position: relative;
+  }
+  
+  .profile-picture {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 50%;
+    border: 3px solid var(--primary);
+  }
+  
+  .profile-picture-edit {
+    position: absolute;
+    right: 10px;
+    bottom: 10px;
+    background: var(--primary);
+    border-radius: 50%;
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    cursor: pointer;
+  }
+  
+  .form-section {
+    background-color: #f9f9f9;
+    border-radius: 8px;
+    padding: 20px;
+    margin-bottom: 20px;
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+  <div class="row profile-container">
+    <!-- Sidebar -->
+    <div class="col-md-3 profile-sidebar py-4">
+      <div class="text-center mb-4">
+        <div class="profile-picture-container">
+          <img src="{{ user.profile.profile_picture.url }}" alt="Profile Picture" class="profile-picture">
+        </div>
+        <h5 class="mb-1">{{ user.get_full_name|default:user.username }}</h5>
+        <p class="text-muted mb-3">{{ user.profile.farmer_type|title }} Farmer</p>
+      </div>
+      
+      <ul class="nav flex-column profile-nav">
+        <li class="nav-item">
+          <a class="nav-link {% if active_tab == 'dashboard' %}active{% endif %}" href="{% url 'dashboard' %}">
+            <i class="fas fa-tachometer-alt mr-2"></i> Dashboard
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link {% if active_tab == 'profile' %}active{% endif %}" href="{% url 'profile' %}">
+            <i class="fas fa-user mr-2"></i> My Profile
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="{% url 'croprecommendation' %}">
+            <i class="fas fa-seedling mr-2"></i> Crop Recommendations
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link {% if active_tab == 'settings' %}active{% endif %}" href="{% url 'settings' %}">
+            <i class="fas fa-cog mr-2"></i> Settings
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="{% url 'logout' %}">
+            <i class="fas fa-sign-out-alt mr-2"></i> Logout
+          </a>
+        </li>
+      </ul>
+    </div>
+    
+    <!-- Main Content -->
+    <div class="col-md-9 py-4">
+      <h2 class="mb-4">My Profile</h2>
+      
+      {% if messages %}
+        {% for message in messages %}
+          <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+            {{ message }}
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+        {% endfor %}
+      {% endif %}
+      
+      <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        
+        <div class="form-section">
+          <h4 class="mb-3">Personal Information</h4>
+          <div class="row">
+            <div class="col-md-6 mb-3">
+              <label for="{{ user_form.username.id_for_label }}">Username</label>
+              <div class="form-group">
+                {{ user_form.username }}
+              </div>
+            </div>
+            <div class="col-md-6 mb-3">
+              <label for="{{ user_form.email.id_for_label }}">Email</label>
+              <div class="form-group">
+                {{ user_form.email }}
+              </div>
+            </div>
+          </div>
+          
+          <div class="row">
+            <div class="col-md-6 mb-3">
+              <label for="{{ user_form.first_name.id_for_label }}">First Name</label>
+              <div class="form-group">
+                {{ user_form.first_name }}
+              </div>
+            </div>
+            <div class="col-md-6 mb-3">
+              <label for="{{ user_form.last_name.id_for_label }}">Last Name</label>
+              <div class="form-group">
+                {{ user_form.last_name }}
+              </div>
+            </div>
+          </div>
+          
+          <div class="row">
+            <div class="col-md-6 mb-3">
+              <label for="{{ profile_form.phone_number.id_for_label }}">Phone Number</label>
+              <div class="form-group">
+                {{ profile_form.phone_number }}
+              </div>
+            </div>
+            <div class="col-md-6 mb-3">
+              <label for="{{ profile_form.location.id_for_label }}">Location</label>
+              <div class="form-group">
+                {{ profile_form.location }}
+              </div>
+            </div>
+          </div>
+          
+          <div class="mb-3">
+            <label for="{{ profile_form.bio.id_for_label }}">Bio</label>
+            <div class="form-group">
+              {{ profile_form.bio }}
+            </div>
+            <small class="form-text text-muted">Tell us a little about yourself and your farming background.</small>
+          </div>
+        </div>
+        
+        <div class="form-section">
+          <h4 class="mb-3">Farming Information</h4>
+          
+          <div class="row">
+            <div class="col-md-6 mb-3">
+              <label for="{{ profile_form.farmer_type.id_for_label }}">Farmer Type</label>
+              <div class="form-group">
+                {{ profile_form.farmer_type }}
+              </div>
+            </div>
+            <div class="col-md-6 mb-3">
+              <label for="{{ profile_form.farming_experience.id_for_label }}">Farming Experience</label>
+              <div class="form-group">
+                {{ profile_form.farming_experience }}
+              </div>
+            </div>
+          </div>
+          
+          <div class="row">
+            <div class="col-md-6 mb-3">
+              <label for="{{ profile_form.farm_size.id_for_label }}">Farm Size (acres)</label>
+              <div class="form-group">
+                {{ profile_form.farm_size }}
+              </div>
+            </div>
+            <div class="col-md-6 mb-3">
+              <label for="{{ profile_form.preferred_crops.id_for_label }}">Preferred Crops</label>
+              <div class="form-group">
+                {{ profile_form.preferred_crops }}
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <div class="form-section">
+          <h4 class="mb-3">Profile Picture</h4>
+          <div class="row">
+            <div class="col-md-3">
+              <img src="{{ user.profile.profile_picture.url }}" class="img-fluid rounded" alt="Current profile picture">
+            </div>
+            <div class="col-md-9">
+              <label for="{{ profile_form.profile_picture.id_for_label }}">Change Profile Picture</label>
+              <div class="form-group">
+                {{ profile_form.profile_picture }}
+              </div>
+              <small class="form-text text-muted">Upload a square image for best results. Maximum file size: 2MB.</small>
+            </div>
+          </div>
+        </div>
+        
+        <div class="text-center mt-4">
+          <button type="submit" class="btn btn-primary btn-lg px-5">
+            <i class="fas fa-save mr-2"></i>Save Changes
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}

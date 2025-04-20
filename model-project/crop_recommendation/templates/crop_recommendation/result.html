@@ -1,0 +1,129 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Crop Recommendation Result{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="py-5 bg-success text-white text-center">
+  <div class="container">
+    <h1><i class="fas fa-check-circle mr-2"></i>Crop Recommendation Results</h1>
+    <p class="lead">Based on your soil parameters and environmental conditions</p>
+  </div>
+</section>
+
+<div class="container py-5">
+  <div class="row">
+    <div class="col-lg-8 mx-auto">
+      <!-- Result Card -->
+      <div class="farmmate-card mb-5">
+        <div class="farmmate-card-header bg-primary">
+          <h3 class="m-0"><i class="fas fa-seedling mr-2"></i>Recommended Crop</h3>
+        </div>
+        <div class="farmmate-card-body text-center py-5">
+          <div class="mb-4">
+            <span class="display-4 text-success">{{ ans.0 }}</span>
+          </div>
+          <p class="lead">This crop is most suitable based on your provided parameters</p>
+          <div class="mt-4">
+            <a href="#crop-details" class="btn btn-primary">
+              <i class="fas fa-info-circle mr-2"></i>Learn More About This Crop
+            </a>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Parameters Summary Card -->
+      <div class="farmmate-card mb-5">
+        <div class="farmmate-card-header">
+          <h3 class="m-0"><i class="fas fa-list-alt mr-2"></i>Your Input Parameters</h3>
+        </div>
+        <div class="farmmate-card-body">
+          <div class="row">
+            <!-- Soil Parameters -->
+            <div class="col-md-6">
+              <h4 class="text-primary"><i class="fas fa-layer-group mr-2"></i>Soil Parameters</h4>
+              <table class="table">
+                <tbody>
+                  <tr>
+                    <th><i class="fas fa-leaf text-success mr-2"></i>Nitrogen (N):</th>
+                    <td><span class="badge badge-light">{{ list_values.0 }} mg/kg</span></td>
+                  </tr>
+                  <tr>
+                    <th><i class="fas fa-flask text-success mr-2"></i>Phosphorus (P):</th>
+                    <td><span class="badge badge-light">{{ list_values.1 }} mg/kg</span></td>
+                  </tr>
+                  <tr>
+                    <th><i class="fas fa-vial text-success mr-2"></i>Potassium (K):</th>
+                    <td><span class="badge badge-light">{{ list_values.2 }} mg/kg</span></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            
+            <!-- Environmental Parameters -->
+            <div class="col-md-6">
+              <h4 class="text-primary"><i class="fas fa-cloud-sun mr-2"></i>Environmental Factors</h4>
+              <table class="table">
+                <tbody>
+                  <tr>
+                    <th><i class="fas fa-temperature-high text-warning mr-2"></i>Temperature:</th>
+                    <td><span class="badge badge-light">{{ list_values.3 }} °C</span></td>
+                  </tr>
+                  <tr>
+                    <th><i class="fas fa-tint text-info mr-2"></i>Humidity:</th>
+                    <td><span class="badge badge-light">{{ list_values.4 }}%</span></td>
+                  </tr>
+                  <tr>
+                    <th><i class="fas fa-balance-scale text-secondary mr-2"></i>pH Level:</th>
+                    <td><span class="badge badge-light">{{ list_values.5 }}</span></td>
+                  </tr>
+                  <tr>
+                    <th><i class="fas fa-cloud-rain text-primary mr-2"></i>Rainfall:</th>
+                    <td><span class="badge badge-light">{{ list_values.6 }} mm</span></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Crop Details Card -->
+      <div class="farmmate-card mb-5" id="crop-details">
+        <div class="farmmate-card-header">
+          <h3 class="m-0"><i class="fas fa-info-circle mr-2"></i>About {{ ans.0 }}</h3>
+        </div>
+        <div class="farmmate-card-body">
+          <div class="row">
+            <div class="col-md-4 mb-4 text-center">
+              <!-- Placeholder image - replace with actual crop image if available -->
+              <i class="fas fa-leaf fa-5x text-success mb-3"></i>
+            </div>
+            <div class="col-md-8">
+              <h4>Growing Information</h4>
+              <p>{{ ans.0 }} thrives in the conditions you've described. Here's some general information about this crop:</p>
+              <ul>
+                <li>Optimal growing season based on your parameters</li>
+                <li>General care instructions</li>
+                <li>Typical yields under similar conditions</li>
+              </ul>
+              <div class="alert alert-info">
+                <i class="fas fa-lightbulb mr-2"></i>For detailed cultivation guides, check our Resources section.
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Action Buttons -->
+      <div class="text-center mb-5">
+        <a href="{% url 'croprecommendation' %}" class="btn btn-lg btn-primary">
+          <i class="fas fa-redo mr-2"></i>Try Another Recommendation
+        </a>
+        <!-- Weather forecast button removed to fix NoReverseMatch error -->
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
