@@ -3,6 +3,7 @@ from django.contrib.auth.models import User
 from django.urls import reverse
 from django.utils import timezone
 from django.utils.text import slugify
+from django.core.exceptions import ValidationError
 
 # Category choices for posts
 CATEGORY_CHOICES = [
@@ -14,11 +15,19 @@ CATEGORY_CHOICES = [
     ('question', 'Questions'),
 ]
 
+def validate_file_size(value):
+    """Validate that the file size is under 5MB"""
+    filesize = value.size
+    
+    if filesize > 5 * 1024 * 1024:  # 5MB limit
+        raise ValidationError("The maximum file size that can be uploaded is 5MB")
+    return value
+
 class Post(models.Model):
     """Model for community forum posts"""
     title = models.CharField(max_length=200)
     content = models.TextField()
-    image = models.ImageField(upload_to='community_posts/%Y/%m/', blank=True, null=True)
+    image = models.ImageField(upload_to='community_posts/%Y/%m/', blank=True, null=True, validators=[validate_file_size])
     created_at = models.DateTimeField(default=timezone.now)
     updated_at = models.DateTimeField(auto_now=True)
     author = models.ForeignKey(User, on_delete=models.CASCADE, related_name='posts')

@@ -1,0 +1,15 @@
+# PythonAnywhere Configuration
+# This file contains settings specific to PythonAnywhere hosting
+
+# Media file handling
+RESTRICT_MEDIA_UPLOADS=True
+MAX_UPLOAD_SIZE=5242880  # 5MB limit for uploads
+
+# Limit types of files that can be uploaded
+ALLOWED_UPLOAD_EXTENSIONS=.jpg,.jpeg,.png,.gif,.webp
+
+# Cache settings
+ENABLE_STATIC_CACHE=True
+CACHE_MAX_AGE=86400  # 24 hours
+
+# Add any custom PythonAnywhere-specific settings below

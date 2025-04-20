@@ -5,6 +5,8 @@ from django.core.paginator import Paginator
 from django.http import JsonResponse, HttpResponseForbidden
 from .models import Post, Comment
 from .forms import PostForm, CommentForm
+from django.views.generic.edit import CreateView
+from django.contrib.auth.mixins import LoginRequiredMixin
 
 
 def post_list(request):
@@ -164,3 +166,22 @@ def like_post(request, pk):
             'liked': liked
         })
     return JsonResponse({'error': 'Invalid request'}, status=400)
+
+
+class PostCreateView(LoginRequiredMixin, CreateView):
+    model = Post
+    form_class = PostForm
+    template_name = 'community/post_form.html'
+    
+    def form_valid(self, form):
+        form.instance.author = self.request.user
+        
+        # Check file size manually for better error messages
+        if 'image' in self.request.FILES:
+            image = self.request.FILES['image']
+            if image.size > 5 * 1024 * 1024:  # 5MB limit
+                form.add_error('image', 'The image file is too large. Maximum size is 5MB.')
+                return self.form_invalid(form)
+                
+        messages.success(self.request, 'Your post has been created successfully!')
+        return super().form_valid(form)
