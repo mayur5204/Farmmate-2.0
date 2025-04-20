@@ -6,3 +6,7 @@ pandas>=1.4.0
 Pillow>=9.0.0
 mysqlclient>=2.1.0  # For MySQL on PythonAnywhere
 gunicorn>=20.1.0    # For production deployments
+whitenoise>=6.0.0   # For serving static files
+dj-database-url>=0.5.0  # For database configuration
+psycopg2-binary>=2.9.5  # For PostgreSQL support (if needed)
+python-dotenv>=0.19.0   # For environment variable management

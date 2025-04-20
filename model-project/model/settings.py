@@ -1,24 +1,39 @@
 from pathlib import Path
 import os
 
+# Make imports optional for development
+try:
+    import dj_database_url
+    HAVE_DJ_DATABASE_URL = True
+except ImportError:
+    HAVE_DJ_DATABASE_URL = False
+
+try:
+    import whitenoise
+    HAVE_WHITENOISE = True
+except ImportError:
+    HAVE_WHITENOISE = False
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
-
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-# Use environment variable or defaults to a placeholder during development
 SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY', 'django-insecure-p3x)s!#!s1!ky1@4l1a4y_z9&_4=jt+ztz5bix&o*+)lc+gd)0')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-# Set DEBUG to False in production by setting the DJANGO_DEBUG environment variable
-DEBUG = os.environ.get('DJANGO_DEBUG', 'False') == 'True'
+DEBUG = os.environ.get('DJANGO_DEBUG', 'True') == 'True'
 
-# Updated to include PythonAnywhere domain
-ALLOWED_HOSTS = ['localhost', '127.0.0.1', '.pythonanywhere.com', '.ngrok-free.app'] + os.environ.get('DJANGO_ALLOWED_HOSTS', '').split(',')
-
+# Updated to include PythonAnywhere and Render domains
+ALLOWED_HOSTS = [
+    'localhost', 
+    '127.0.0.1', 
+    '.pythonanywhere.com', 
+    '.ngrok-free.app',
+    '.onrender.com'
+] + os.environ.get('DJANGO_ALLOWED_HOSTS', '').split(',')
 
 # Application definition
 
@@ -37,6 +52,12 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+]
+
+if HAVE_WHITENOISE:
+    MIDDLEWARE.append('whitenoise.middleware.WhiteNoiseMiddleware') 
+
+MIDDLEWARE += [
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -44,6 +65,19 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
+
+# Security settings for production
+if not DEBUG:
+    SECURE_HSTS_SECONDS = 31536000  # 1 year
+    SECURE_HSTS_INCLUDE_SUBDOMAINS = True
+    
+    # Only use these settings if not running locally
+    if not any(host in ['localhost', '127.0.0.1'] for host in ALLOWED_HOSTS):
+        SECURE_SSL_REDIRECT = True
+        SESSION_COOKIE_SECURE = True
+        CSRF_COOKIE_SECURE = True
+    
+    SECURE_HSTS_PRELOAD = True
 
 ROOT_URLCONF = 'model.urls'
 
@@ -72,7 +106,6 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'model.wsgi.application'
 
-
 # Database
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
 
@@ -83,6 +116,11 @@ DATABASES = {
     }
 }
 
+# Use DATABASE_URL environment variable if available and dj_database_url is installed
+if HAVE_DJ_DATABASE_URL:
+    database_url = os.environ.get('DATABASE_URL')
+    if database_url:
+        DATABASES['default'] = dj_database_url.parse(database_url)
 
 # Password validation
 # https://docs.djangoproject.com/en/5.0/ref/settings/#auth-password-validators
@@ -102,7 +140,6 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-
 # Internationalization
 # https://docs.djangoproject.com/en/5.0/topics/i18n/
 
@@ -114,20 +151,28 @@ USE_I18N = True
 
 USE_TZ = True
 
-
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.0/howto/static-files/
 
-STATIC_URL = 'static/'
+STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
 STATICFILES_DIRS = [
-    BASE_DIR / "static",
+    os.path.join(BASE_DIR, "static"),
 ]
 
 # Media files (Images uploaded by users)
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+
+# Set this to True to allow serving media files even in production
+SERVE_MEDIA_IN_PRODUCTION = True
+
+# Whitenoise settings for serving static files in production
+if HAVE_WHITENOISE:
+    STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+    WHITENOISE_AUTOREFRESH = True
+    WHITENOISE_USE_FINDERS = True
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field

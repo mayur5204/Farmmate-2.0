@@ -1,63 +1,68 @@
+#!/usr/bin/env python
+"""
+Script to clean up old media files that are no longer referenced in the database.
+This script is meant to be run as a cron job on Render.com.
+"""
 import os
-import datetime
-import shutil
+import sys
+import django
+from datetime import datetime, timedelta
 
-def clean_old_media(media_dir, days_old=30):
-    """
-    Remove media files older than the specified number of days
-    """
-    today = datetime.datetime.now()
-    cutoff = today - datetime.timedelta(days=days_old)
+# Set up Django environment
+sys.path.append('model-project')
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'model.settings')
+django.setup()
+
+from django.conf import settings
+from community.models import Post
+from users.models import UserProfile
+import logging
+
+# Configure logging
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+)
+logger = logging.getLogger(__name__)
+
+def cleanup_community_posts():
+    """Remove community post images older than 90 days that are no longer referenced in the database"""
+    logger.info("Starting community post cleanup")
     
-    print(f"Cleaning files older than {days_old} days...")
-    removed_count = 0
+    # Get all media files from community posts in the database
+    db_files = set()
+    for post in Post.objects.all():
+        if post.image:
+            db_files.add(post.image.path)
     
-    # Walk through all directories in the media folder
-    for root, dirs, files in os.walk(media_dir):
-        # Skip the default profile pic
-        if "default.png" in files and "profile_pics" in root:
-            files.remove("default.png")
+    # Get all files in the media/community_posts directory
+    media_dir = os.path.join(settings.MEDIA_ROOT, 'community_posts')
+    if not os.path.exists(media_dir):
+        logger.info(f"Directory {media_dir} does not exist, nothing to clean up")
+        return
+        
+    # Check each file in the media directory
+    count = 0
+    for root, _, files in os.walk(media_dir):
+        for filename in files:
+            file_path = os.path.join(root, filename)
             
-        for file in files:
-            file_path = os.path.join(root, file)
-            file_modified = datetime.datetime.fromtimestamp(os.path.getmtime(file_path))
-            
-            if file_modified < cutoff:
-                try:
-                    os.remove(file_path)
-                    print(f"Removed: {file_path}")
-                    removed_count += 1
-                except Exception as e:
-                    print(f"Error removing {file_path}: {e}")
+            # If file is not in database and is older than 90 days, delete it
+            if file_path not in db_files:
+                file_stat = os.stat(file_path)
+                file_time = datetime.fromtimestamp(file_stat.st_mtime)
+                if datetime.now() - file_time > timedelta(days=90):
+                    try:
+                        os.remove(file_path)
+                        count += 1
+                        logger.info(f"Removed orphaned file: {file_path}")
+                    except Exception as e:
+                        logger.error(f"Error deleting {file_path}: {str(e)}")
     
-    # Clean empty directories
-    for root, dirs, files in os.walk(media_dir, topdown=False):
-        for dir in dirs:
-            dir_path = os.path.join(root, dir)
-            if not os.listdir(dir_path):  # Check if directory is empty
-                try:
-                    os.rmdir(dir_path)
-                    print(f"Removed empty directory: {dir_path}")
-                except Exception as e:
-                    print(f"Error removing directory {dir_path}: {e}")
-    
-    print(f"Cleanup complete. Removed {removed_count} files.")
+    logger.info(f"Completed community post cleanup. Removed {count} orphaned files")
 
 if __name__ == "__main__":
-    import sys
-    from pathlib import Path
-    
-    # Get the directory of the script
-    script_dir = Path(__file__).resolve().parent
-    # Media directory path
-    media_dir = script_dir / "model-project" / "media"
-    
-    # Default to 30 days if no argument is provided
-    days = 30
-    if len(sys.argv) > 1:
-        try:
-            days = int(sys.argv[1])
-        except ValueError:
-            print(f"Invalid days value: {sys.argv[1]}. Using default of 30 days.")
-    
-    clean_old_media(media_dir, days)
+    logger.info("Starting media cleanup script")
+    cleanup_community_posts()
+    # Add more cleanup functions here as needed
+    logger.info("Media cleanup complete")

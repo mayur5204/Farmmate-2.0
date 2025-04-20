@@ -1,0 +1,24 @@
+services:
+  - type: web
+    name: farmmate
+    runtime: python
+    buildCommand: ./build.sh
+    startCommand: cd model-project && gunicorn model.wsgi:application --bind 0.0.0.0:$PORT
+    envVars:
+      - key: DJANGO_DEBUG
+        value: False
+      - key: DJANGO_SECRET_KEY
+        generateValue: true
+      - key: DJANGO_ALLOWED_HOSTS
+        value: .onrender.com
+      - key: DATABASE_URL
+        value: sqlite:///db.sqlite3
+      - key: PYTHON_VERSION
+        value: 3.9.0
+    
+  - type: cron
+    name: cleanup-media
+    runtime: python
+    schedule: "0 0 * * *"  # Run at midnight every day
+    buildCommand: pip install -r requirements.txt
+    startCommand: cd model-project && python ../cleanup_media.py
