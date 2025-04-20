@@ -5,6 +5,12 @@ from django.conf.urls.static import static
 from django.views.static import serve
 import os
 
+# Custom view to serve media files in production
+def serve_media_in_production(request, path):
+    """Custom view to serve media files in production environments"""
+    media_root = settings.MEDIA_ROOT
+    return serve(request, path, document_root=media_root)
+
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include('home.urls')),
@@ -12,11 +18,13 @@ urlpatterns = [
     path('users/', include('users.urls')),
     path('community/', include('community.urls')),
     
-    # Always serve static and media files regardless of DEBUG setting
-    path('media/<path:path>', serve, {'document_root': settings.MEDIA_ROOT}),
+    # Always serve media files regardless of DEBUG setting
+    path('media/<path:path>', serve_media_in_production),
+    
+    # Serve static files directly
     path('static/<path:path>', serve, {'document_root': settings.STATIC_ROOT or settings.STATICFILES_DIRS[0]}),
 ]
 
-# Alternative way to serve media and static files
+# Add static/media URLs as a fallback
 urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT or settings.STATICFILES_DIRS[0])
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

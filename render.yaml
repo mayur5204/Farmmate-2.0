@@ -18,6 +18,12 @@ services:
         value: 3.9.0
       - key: WEB_CONCURRENCY
         value: 2  # Optimize worker count for free tier resources
+      - key: RENDER
+        value: true
+    disk:
+      name: media
+      mountPath: /opt/render/project/data
+      sizeGB: 1  # 1GB disk, which is the free tier limit
     
   - type: cron
     name: cleanup-media

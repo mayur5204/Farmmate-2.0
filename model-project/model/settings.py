@@ -168,6 +168,14 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 # Set this to True to allow serving media files even in production
 SERVE_MEDIA_IN_PRODUCTION = True
 
+# For production environments like Render.com
+if not DEBUG:
+    # Ensure media files persist across deployments by using a persistent directory
+    if os.environ.get('RENDER', False):
+        MEDIA_ROOT = '/opt/render/project/data/media'
+        # Create directory if it doesn't exist
+        os.makedirs(MEDIA_ROOT, exist_ok=True)
+
 # Whitenoise settings for serving static files in production
 if HAVE_WHITENOISE:
     STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
