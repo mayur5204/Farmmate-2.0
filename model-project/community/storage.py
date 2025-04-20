@@ -1,4 +1,5 @@
 from django.core.files.storage import FileSystemStorage
+from django.core.files.base import ContentFile
 from django.conf import settings
 import os
 import io
@@ -37,7 +38,9 @@ class MobileCompatibleStorage(FileSystemStorage):
                     
                     # Change the file extension to jpg
                     name = os.path.splitext(name)[0] + '.jpg'
-                    content = buffer
+                    
+                    # Create a proper Django ContentFile with the buffer contents
+                    content = ContentFile(buffer.getvalue(), name=os.path.basename(name))
                     
                     logger.info(f"Converted HEIC/HEIF image to JPEG: {name}")
                 
@@ -69,7 +72,9 @@ class MobileCompatibleStorage(FileSystemStorage):
                         name = os.path.splitext(name)[0] + '.jpg'
                     
                     buffer.seek(0)
-                    content = buffer
+                    
+                    # Create a proper Django ContentFile with the buffer contents
+                    content = ContentFile(buffer.getvalue(), name=os.path.basename(name))
                     
                     logger.info(f"Processed image: {name}")
                     

@@ -59,11 +59,22 @@
                                 <!-- Hidden original input that Django generates -->
                                 <div style="display:none;">{{ form.image }}</div>
                                 
-                                <!-- Mobile-friendly custom file input -->
-                                <input type="file" id="mobile-image-input" name="image" accept="image/*" capture="camera" class="form-control-file" style="width: 100%;">
+                                <!-- Mobile-friendly file input - WITHOUT capture to allow access to both camera and gallery -->
+                                <input type="file" id="mobile-image-input" name="image" accept="image/*" class="form-control-file" style="width: 100%;">
                                 
-                                <small class="form-text text-muted">Upload an image to enhance your post (optional).</small>
-                                <small class="form-text text-primary">Tap to select or take a photo on mobile devices</small>
+                                <div class="mt-2 mb-2">
+                                    <small class="form-text text-muted">Upload an image to enhance your post (optional).</small>
+                                    <div class="mt-2 d-flex">
+                                        <button type="button" class="btn btn-sm btn-outline-primary mr-2" onclick="document.getElementById('camera-input').click()">
+                                            <i class="fas fa-camera mr-1"></i> Take Photo
+                                        </button>
+                                        <button type="button" class="btn btn-sm btn-outline-secondary" onclick="document.getElementById('mobile-image-input').click()">
+                                            <i class="fas fa-image mr-1"></i> Choose from Gallery
+                                        </button>
+                                    </div>
+                                    <!-- Hidden input specifically for camera access -->
+                                    <input type="file" id="camera-input" accept="image/*" capture="camera" style="display:none;">
+                                </div>
                             </div>
                         </div>
                         
@@ -95,25 +106,39 @@
 
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-        // Get both file input elements
+        // Get all file input elements
         var originalInput = document.querySelector('{{ form.image.id_for_label }}');
         var mobileInput = document.getElementById('mobile-image-input');
+        var cameraInput = document.getElementById('camera-input');
+        
+        // Function to sync file selection to the original Django input
+        function syncFileSelection(sourceInput) {
+            if (sourceInput.files && sourceInput.files.length > 0) {
+                try {
+                    // Create a new DataTransfer object
+                    const dataTransfer = new DataTransfer();
+                    // Add the selected file
+                    dataTransfer.items.add(sourceInput.files[0]);
+                    // Set the files property of the original input
+                    originalInput.files = dataTransfer.files;
+                    mobileInput.files = dataTransfer.files;
+                    
+                    // Show selected filename
+                    var filename = sourceInput.value.split('\\').pop();
+                    document.querySelector('.custom-file-container small.form-text.text-muted').innerText = 'Selected: ' + filename;
+                } catch (e) {
+                    console.error("Error syncing file:", e);
+                }
+            }
+        }
         
         // Sync the files between inputs
         mobileInput.addEventListener('change', function() {
-            // Transfer the selected file to the original Django input
-            if (mobileInput.files && mobileInput.files.length > 0) {
-                // Create a new DataTransfer object
-                const dataTransfer = new DataTransfer();
-                // Add the selected file
-                dataTransfer.items.add(mobileInput.files[0]);
-                // Set the files property of the original input
-                originalInput.files = dataTransfer.files;
-                
-                // Show selected filename
-                var filename = mobileInput.value.split('\\').pop();
-                mobileInput.nextElementSibling.innerText = 'Selected: ' + filename;
-            }
+            syncFileSelection(mobileInput);
+        });
+        
+        cameraInput.addEventListener('change', function() {
+            syncFileSelection(cameraInput);
         });
     });
 </script>
