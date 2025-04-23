@@ -18,7 +18,7 @@ class UserUpdateForm(forms.ModelForm):
 class ProfileUpdateForm(forms.ModelForm):
     class Meta:
         model = UserProfile
-        fields = ['profile_picture', 'bio', 'location', 'phone_number', 
+        fields = ['bio', 'location', 'phone_number', 
                  'farmer_type', 'farming_experience', 'preferred_crops', 'farm_size']
         widgets = {
             'bio': forms.Textarea(attrs={'class': 'form-control', 'rows': 4}),
@@ -28,8 +28,29 @@ class ProfileUpdateForm(forms.ModelForm):
             'farming_experience': forms.Select(attrs={'class': 'form-control'}),
             'preferred_crops': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'e.g., Rice, Wheat, Maize (comma separated)'}),
             'farm_size': forms.NumberInput(attrs={'class': 'form-control'}),
-            'profile_picture': forms.FileInput(attrs={'class': 'form-control-file'})
         }
+
+class ProfilePictureForm(forms.ModelForm):
+    """Separate form for handling only profile picture updates"""
+    class Meta:
+        model = UserProfile
+        fields = ['profile_picture']
+        widgets = {
+            'profile_picture': forms.FileInput(attrs={
+                'class': 'form-control-file',
+                'accept': 'image/*',
+                'id': 'profile-pic-input'
+            })
+        }
+        
+    def clean_profile_picture(self):
+        """Validate that the uploaded file is an image and not too large"""
+        image = self.cleaned_data.get('profile_picture', False)
+        if image:
+            if image.size > 5 * 1024 * 1024:  # 5MB limit
+                raise forms.ValidationError("Image file too large (maximum 5MB)")
+            return image
+        return image
 
 class CustomPasswordChangeForm(PasswordChangeForm):
     """Custom password change form with bootstrap styling"""

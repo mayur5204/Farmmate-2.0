@@ -6,8 +6,14 @@ from django.contrib.auth import logout as auth_logout
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.views import PasswordChangeView
 from django.urls import reverse_lazy
-from .forms import UserUpdateForm, ProfileUpdateForm, CustomPasswordChangeForm
+from django.utils import timezone
+import time  # Import time module for cache busting
+import base64
+import json
+from django.core.files.base import ContentFile
+from .forms import UserUpdateForm, ProfileUpdateForm, ProfilePictureForm, CustomPasswordChangeForm
 from .models import UserProfile
+from community.models import Post, Comment  # Import community models
 
 def login(request):
     if request.method == 'POST':
@@ -57,23 +63,67 @@ def logout(request):
 @login_required
 def profile(request):
     """View function for user profile"""
-    if request.method == 'POST':
+    # Initialize form_type to track which form was submitted
+    form_type = request.POST.get('form_type', None)
+    
+    if request.method == 'POST' and form_type == 'profile_info':
+        # Handle regular profile info update
         user_form = UserUpdateForm(request.POST, instance=request.user)
-        profile_form = ProfileUpdateForm(request.POST, request.FILES, instance=request.user.profile)
+        profile_form = ProfileUpdateForm(request.POST, instance=request.user.profile)
+        profile_picture_form = ProfilePictureForm(instance=request.user.profile)
         
         if user_form.is_valid() and profile_form.is_valid():
             user_form.save()
             profile_form.save()
-            messages.success(request, 'Your profile has been updated!')
+            messages.success(request, 'Your profile information has been updated!')
             return redirect('profile')
-    else:
+            
+    elif request.method == 'POST' and form_type == 'profile_picture':
+        # Handle profile picture update separately
         user_form = UserUpdateForm(instance=request.user)
         profile_form = ProfileUpdateForm(instance=request.user.profile)
+        
+        # Check if we have a cropped image from JavaScript
+        if 'cropped_image' in request.POST:
+            # Process the cropped image data
+            cropped_data = request.POST.get('cropped_image')
+            if cropped_data:
+                # Remove the "data:image/png;base64," part
+                format, imgstr = cropped_data.split(';base64,')
+                ext = format.split('/')[-1]
+                
+                # Create ContentFile from decoded base64 data
+                data = ContentFile(base64.b64decode(imgstr), name=f'profile_pic_{request.user.username}.{ext}')
+                
+                # Save the new image
+                request.user.profile.profile_picture = data
+                request.user.profile.save()
+                
+                messages.success(request, 'Your profile picture has been updated!')
+                return redirect(f'profile?t={int(time.time())}')
+        else:
+            # Use the regular form approach if no cropped image
+            profile_picture_form = ProfilePictureForm(request.POST, request.FILES, instance=request.user.profile)
+            
+            if profile_picture_form.is_valid():
+                profile_picture_form.save()
+                messages.success(request, 'Your profile picture has been updated!')
+                return redirect(f'profile?t={int(time.time())}')
+    else:
+        # GET request - display forms
+        user_form = UserUpdateForm(instance=request.user)
+        profile_form = ProfileUpdateForm(instance=request.user.profile)
+        profile_picture_form = ProfilePictureForm(instance=request.user.profile)
+    
+    # Add timestamp to profile picture URL to prevent browser caching
+    profile_pic_url = f"{request.user.profile.profile_picture.url}?t={int(time.time())}"
     
     context = {
         'user_form': user_form,
         'profile_form': profile_form,
-        'active_tab': 'profile'
+        'profile_picture_form': profile_picture_form,
+        'active_tab': 'profile',
+        'profile_pic_url': profile_pic_url
     }
     return render(request, 'users/profile.html', context)
 
@@ -88,8 +138,17 @@ def settings(request):
 @login_required
 def dashboard(request):
     """View function for user dashboard"""
+    # Fetch the most recent community posts
+    recent_posts = Post.objects.select_related('author').prefetch_related('comments')[:2]
+    
+    # Add timestamp to profile picture URL to prevent browser caching
+    profile_pic_url = f"{request.user.profile.profile_picture.url}?t={int(time.time())}"
+    
     context = {
-        'active_tab': 'dashboard'
+        'active_tab': 'dashboard',
+        'date_today': timezone.now(),
+        'recent_posts': recent_posts,
+        'profile_pic_url': profile_pic_url
     }
     return render(request, 'users/dashboard.html', context)
 

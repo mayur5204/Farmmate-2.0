@@ -1,19 +1,6 @@
 from pathlib import Path
 import os
 
-# Make imports optional for development
-try:
-    import dj_database_url
-    HAVE_DJ_DATABASE_URL = True
-except ImportError:
-    HAVE_DJ_DATABASE_URL = False
-
-try:
-    import whitenoise
-    HAVE_WHITENOISE = True
-except ImportError:
-    HAVE_WHITENOISE = False
-
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -21,19 +8,18 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY', 'django-insecure-p3x)s!#!s1!ky1@4l1a4y_z9&_4=jt+ztz5bix&o*+)lc+gd)0')
+SECRET_KEY = 'django-insecure-p3x)s!#!s1!ky1@4l1a4y_z9&_4=jt+ztz5bix&o*+)lc+gd)0'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = os.environ.get('DJANGO_DEBUG', 'True') == 'True'
+DEBUG = True
 
-# Updated to include PythonAnywhere and Render domains
+# Simplified allowed hosts
 ALLOWED_HOSTS = [
     'localhost', 
     '127.0.0.1', 
     '.pythonanywhere.com', 
     '.ngrok-free.app',
-    '.onrender.com'
-] + os.environ.get('DJANGO_ALLOWED_HOSTS', '').split(',')
+]
 
 # Application definition
 
@@ -52,12 +38,6 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
-]
-
-if HAVE_WHITENOISE:
-    MIDDLEWARE.append('whitenoise.middleware.WhiteNoiseMiddleware') 
-
-MIDDLEWARE += [
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -65,19 +45,6 @@ MIDDLEWARE += [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
-
-# Security settings for production
-if not DEBUG:
-    SECURE_HSTS_SECONDS = 31536000  # 1 year
-    SECURE_HSTS_INCLUDE_SUBDOMAINS = True
-    
-    # Only use these settings if not running locally
-    if not any(host in ['localhost', '127.0.0.1'] for host in ALLOWED_HOSTS):
-        SECURE_SSL_REDIRECT = True
-        SESSION_COOKIE_SECURE = True
-        CSRF_COOKIE_SECURE = True
-    
-    SECURE_HSTS_PRELOAD = True
 
 ROOT_URLCONF = 'model.urls'
 
@@ -106,34 +73,13 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'model.wsgi.application'
 
-# Database
-# https://docs.djangoproject.com/en/5.0/ref/settings/#databases
-
-# Determine if we're running on Render.com
-IS_RENDER = os.environ.get('RENDER', '') == 'true'
-
-if IS_RENDER:
-    # Use persistent storage for database on Render
-    DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.sqlite3',
-            'NAME': '/opt/render/project/data/db.sqlite3',
-        }
+# Database - simplified to use local SQLite
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'db.sqlite3',
     }
-else:
-    # Default configuration for local development
-    DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.sqlite3',
-            'NAME': BASE_DIR / 'db.sqlite3',
-        }
-    }
-
-# Use DATABASE_URL environment variable if available and dj_database_url is installed
-if HAVE_DJ_DATABASE_URL:
-    database_url = os.environ.get('DATABASE_URL')
-    if database_url:
-        DATABASES['default'] = dj_database_url.parse(database_url)
+}
 
 # Password validation
 # https://docs.djangoproject.com/en/5.0/ref/settings/#auth-password-validators
@@ -177,23 +123,6 @@ STATICFILES_DIRS = [
 # Media files (Images uploaded by users)
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
-
-# Set this to True to allow serving media files even in production
-SERVE_MEDIA_IN_PRODUCTION = True
-
-# For production environments like Render.com
-if not DEBUG:
-    # Ensure media files persist across deployments by using a persistent directory
-    if os.environ.get('RENDER', False):
-        MEDIA_ROOT = '/opt/render/project/data/media'
-        # Create directory if it doesn't exist
-        os.makedirs(MEDIA_ROOT, exist_ok=True)
-
-# Whitenoise settings for serving static files in production
-if HAVE_WHITENOISE:
-    STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
-    WHITENOISE_AUTOREFRESH = True
-    WHITENOISE_USE_FINDERS = True
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field

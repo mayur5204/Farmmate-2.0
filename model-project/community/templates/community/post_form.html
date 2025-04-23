@@ -18,7 +18,7 @@
                     </h4>
                 </div>
                 <div class="card-body">
-                    <form method="POST" enctype="multipart/form-data">
+                    <form method="POST" enctype="multipart/form-data" id="post-form">
                         {% csrf_token %}
                         
                         <!-- Form errors -->
@@ -54,26 +54,36 @@
                         
                         <!-- Image field -->
                         <div class="form-group">
-                            <label for="{{ form.image.id_for_label }}">Image (Optional)</label>
+                            <label>Image (Optional)</label>
                             <div class="custom-file-container">
-                                <!-- Hidden original input that Django generates -->
-                                <div style="display:none;">{{ form.image }}</div>
-                                
-                                <!-- Mobile-friendly file input - WITHOUT capture to allow access to both camera and gallery -->
-                                <input type="file" id="mobile-image-input" name="image" accept="image/*" class="form-control-file" style="width: 100%;">
+                                <!-- Place the Django form image field here with an ID so we can find it easily -->
+                                <div style="display:none;" id="django-image-field-container">{{ form.image }}</div>
                                 
                                 <div class="mt-2 mb-2">
                                     <small class="form-text text-muted">Upload an image to enhance your post (optional).</small>
-                                    <div class="mt-2 d-flex">
-                                        <button type="button" class="btn btn-sm btn-outline-primary mr-2" onclick="document.getElementById('camera-input').click()">
-                                            <i class="fas fa-camera mr-1"></i> Take Photo
+                                    <div class="mt-2">
+                                        <button type="button" class="btn btn-primary" id="choose-file-btn">
+                                            <i class="fas fa-image mr-1"></i> Choose File
                                         </button>
-                                        <button type="button" class="btn btn-sm btn-outline-secondary" onclick="document.getElementById('mobile-image-input').click()">
-                                            <i class="fas fa-image mr-1"></i> Choose from Gallery
-                                        </button>
+                                        <span id="file-selection-status" class="ml-2 text-muted">No file selected</span>
                                     </div>
-                                    <!-- Hidden input specifically for camera access -->
-                                    <input type="file" id="camera-input" accept="image/*" capture="camera" style="display:none;">
+                                </div>
+                                
+                                <!-- Image Preview Area -->
+                                <div id="image-preview-container" class="mt-3" style="display: none;">
+                                    <div class="card">
+                                        <div class="card-header bg-light">
+                                            <div class="d-flex justify-content-between align-items-center">
+                                                <span>Image Preview</span>
+                                                <button type="button" class="btn btn-sm btn-outline-danger" id="remove-image-btn">
+                                                    <i class="fas fa-times"></i> Remove
+                                                </button>
+                                            </div>
+                                        </div>
+                                        <div class="card-body text-center">
+                                            <img id="selected-image-preview" src="#" alt="Selected image" class="img-fluid img-thumbnail" style="max-height: 200px;">
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -106,39 +116,72 @@
 
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-        // Get all file input elements
-        var originalInput = document.querySelector('{{ form.image.id_for_label }}');
-        var mobileInput = document.getElementById('mobile-image-input');
-        var cameraInput = document.getElementById('camera-input');
+        // Find the original input in a more reliable way
+        const container = document.getElementById('django-image-field-container');
+        const originalInput = container.querySelector('input[type="file"]');
         
-        // Function to sync file selection to the original Django input
-        function syncFileSelection(sourceInput) {
-            if (sourceInput.files && sourceInput.files.length > 0) {
-                try {
-                    // Create a new DataTransfer object
-                    const dataTransfer = new DataTransfer();
-                    // Add the selected file
-                    dataTransfer.items.add(sourceInput.files[0]);
-                    // Set the files property of the original input
-                    originalInput.files = dataTransfer.files;
-                    mobileInput.files = dataTransfer.files;
-                    
-                    // Show selected filename
-                    var filename = sourceInput.value.split('\\').pop();
-                    document.querySelector('.custom-file-container small.form-text.text-muted').innerText = 'Selected: ' + filename;
-                } catch (e) {
-                    console.error("Error syncing file:", e);
-                }
-            }
+        // Check if we found the input field
+        if (!originalInput) {
+            console.error('Could not find the file input element!');
+            return; // Exit if we can't find the input
         }
         
-        // Sync the files between inputs
-        mobileInput.addEventListener('change', function() {
-            syncFileSelection(mobileInput);
+        // Get other UI elements
+        const chooseFileBtn = document.getElementById('choose-file-btn');
+        const fileSelectionStatus = document.getElementById('file-selection-status');
+        const imagePreviewContainer = document.getElementById('image-preview-container');
+        const selectedImagePreview = document.getElementById('selected-image-preview');
+        const removeImageBtn = document.getElementById('remove-image-btn');
+        
+        // Confirm we found the input in the console for troubleshooting
+        console.log('Found file input:', originalInput);
+        
+        // Handle file selection button click
+        chooseFileBtn.addEventListener('click', function() {
+            console.log('Choose file button clicked');
+            originalInput.click(); // Trigger the hidden input's click event
         });
         
-        cameraInput.addEventListener('change', function() {
-            syncFileSelection(cameraInput);
+        // Handle remove image button
+        removeImageBtn.addEventListener('click', function() {
+            // Clear the file input
+            originalInput.value = '';
+            
+            // Hide the preview
+            imagePreviewContainer.style.display = 'none';
+            
+            // Update status text
+            fileSelectionStatus.innerText = 'No file selected';
+            fileSelectionStatus.className = 'ml-2 text-muted';
+            
+            console.log('Image removed');
+        });
+        
+        // Handle file selection changes
+        originalInput.addEventListener('change', function(event) {
+            console.log('File input changed', event);
+            
+            if (originalInput.files && originalInput.files.length > 0) {
+                const file = originalInput.files[0];
+                console.log('Selected file:', file.name);
+                
+                // Update file selection status with success styling
+                fileSelectionStatus.innerText = file.name;
+                fileSelectionStatus.className = 'ml-2 text-success';
+                
+                // Show image preview
+                try {
+                    const imageUrl = URL.createObjectURL(file);
+                    selectedImagePreview.src = imageUrl;
+                    imagePreviewContainer.style.display = 'block';
+                } catch (e) {
+                    console.error('Error creating preview:', e);
+                }
+            } else {
+                fileSelectionStatus.innerText = "No file selected";
+                fileSelectionStatus.className = 'ml-2 text-muted';
+                imagePreviewContainer.style.display = 'none';
+            }
         });
     });
 </script>
