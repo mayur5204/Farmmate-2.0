@@ -1,163 +1,392 @@
 {% extends 'base.html' %}
 {% load static %}
 
-{% block title %}Register - Farm-Mate{% endblock %}
+{% block title %}Register | FarmMate{% endblock %}
 
-{% block head %}
-  {{ block.super }}
-  <link rel="stylesheet" href="{% static 'css/users/auth-styles.css' %}" />
+{% block extra_css %}
+<style>
+    /* Main register page container */
+    .register-page {
+        min-height: calc(100vh - 300px);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 2rem 0;
+    }
+    
+    /* Card container */
+    .register-card {
+        background: white;
+        border-radius: 12px;
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+        overflow: hidden;
+        width: 100%;
+        max-width: 1000px;
+        margin: 0 auto;
+        position: relative;
+    }
+    
+    /* Split layout */
+    .register-card-inner {
+        display: flex;
+        flex-direction: row;
+    }
+    
+    /* Left side - Image */
+    .register-image-side {
+        flex: 0 0 40%;
+        background-image: url('{% static "images/farm-register.jpg" %}');
+        background-size: cover;
+        background-position: center;
+        position: relative;
+    }
+    
+    .register-image-overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(46, 125, 50, 0.7);
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        color: white;
+        padding: 2rem;
+    }
+    
+    /* Right side - Form */
+    .register-form-side {
+        flex: 1;
+        padding: 2.5rem;
+        display: flex;
+        flex-direction: column;
+    }
+    
+    .register-welcome {
+        margin-bottom: 1.5rem;
+        text-align: center;
+    }
+    
+    .register-welcome h1 {
+        font-size: 1.75rem;
+        color: #333;
+        margin-bottom: 0.5rem;
+    }
+    
+    .register-welcome p {
+        color: #666;
+    }
+    
+    /* Form styling */
+    .register-form {
+        margin-bottom: 1.5rem;
+    }
+    
+    .form-section {
+        margin-bottom: 1.5rem;
+        padding-bottom: 0.5rem;
+        border-bottom: 1px solid #eee;
+    }
+    
+    .form-section h5 {
+        color: #2e7d32;
+        font-size: 1.1rem;
+        margin-bottom: 1rem;
+    }
+    
+    .form-group {
+        margin-bottom: 1.25rem;
+    }
+    
+    .form-control {
+        height: calc(2.5rem + 2px);
+        border-radius: 8px;
+        border: 1px solid #ddd;
+        padding: 0.5rem 1rem;
+        font-size: 1rem;
+    }
+    
+    .form-control:focus {
+        border-color: #2e7d32;
+        box-shadow: 0 0 0 0.2rem rgba(46, 125, 50, 0.25);
+    }
+    
+    label {
+        font-weight: 500;
+        margin-bottom: 0.5rem;
+        display: block;
+        color: #555;
+    }
+    
+    .input-group-prepend .input-group-text {
+        border-top-right-radius: 0;
+        border-bottom-right-radius: 0;
+        background-color: #f8f9fa;
+        border-color: #ddd;
+    }
+    
+    .form-check-label {
+        color: #555;
+    }
+    
+    .help-text {
+        font-size: 0.8rem;
+        color: #6c757d;
+        margin-top: 0.5rem;
+    }
+    
+    /* Button styling */
+    .btn-register {
+        background-color: #2e7d32;
+        border-color: #2e7d32;
+        color: white;
+        border-radius: 8px;
+        padding: 0.75rem 1rem;
+        font-weight: 600;
+        font-size: 1rem;
+        transition: all 0.3s ease;
+    }
+    
+    .btn-register:hover, .btn-register:focus {
+        background-color: #1b5e20;
+        border-color: #1b5e20;
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(27, 94, 32, 0.3);
+    }
+    
+    .btn-register:active {
+        transform: translateY(0);
+    }
+    
+    /* Footer links */
+    .register-footer {
+        text-align: center;
+    }
+    
+    .register-footer a {
+        color: #2e7d32;
+        text-decoration: none;
+        transition: color 0.2s;
+    }
+    
+    .register-footer a:hover {
+        color: #1b5e20;
+        text-decoration: underline;
+    }
+    
+    /* Error styling */
+    .invalid-feedback {
+        color: #dc3545;
+        font-size: 0.875rem;
+        margin-top: 0.25rem;
+    }
+    
+    /* Mobile responsiveness */
+    @media (max-width: 768px) {
+        .register-card-inner {
+            flex-direction: column;
+        }
+        
+        .register-image-side {
+            height: 180px;
+            flex: none;
+        }
+        
+        .register-image-overlay {
+            padding: 1rem;
+        }
+        
+        .register-image-overlay h2 {
+            font-size: 1.5rem;
+        }
+        
+        .register-form-side {
+            padding: 1.5rem;
+        }
+    }
+</style>
 {% endblock %}
 
 {% block content %}
-<div class="container auth-container">
-  <div class="row justify-content-center w-100">
-    <div class="col-md-6 col-lg-5">
-      <div class="auth-card card shadow">
-        <div class="card-header bg-success text-white text-center">
-          <h3>Create an Account</h3>
+<div class="register-page">
+    <div class="register-card">
+        <div class="register-card-inner">
+            <!-- Left side - Image with overlay -->
+            <div class="register-image-side">
+                <div class="register-image-overlay">
+                    <h2>Join Our Community</h2>
+                    <p>Create your FarmMate account to get expert crop recommendations and connect with fellow farmers.</p>
+                </div>
+            </div>
+            
+            <!-- Right side - Registration form -->
+            <div class="register-form-side">
+                <div class="register-welcome">
+                    <h1>Create Your Account</h1>
+                    <p>Fill in the details below to get started</p>
+                </div>
+                
+                {% if messages %}
+                    {% for message in messages %}
+                        <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                            <div class="d-flex align-items-center">
+                                {% if message.tags == 'success' %}
+                                    <i class="fas fa-check-circle mr-2"></i>
+                                {% elif message.tags == 'error' %}
+                                    <i class="fas fa-exclamation-circle mr-2"></i>
+                                {% elif message.tags == 'warning' %}
+                                    <i class="fas fa-exclamation-triangle mr-2"></i>
+                                {% elif message.tags == 'info' %}
+                                    <i class="fas fa-info-circle mr-2"></i>
+                                {% endif %}
+                                {{ message }}
+                            </div>
+                            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                    {% endfor %}
+                {% endif %}
+                
+                <form method="POST" action="{% url 'register' %}" class="register-form">
+                    {% csrf_token %}
+                    
+                    <div class="form-section">
+                        <h5>Account Information</h5>
+                        
+                        <div class="form-group">
+                            <label for="username">Username<span class="text-danger">*</span></label>
+                            <div class="input-group">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text"><i class="fas fa-user"></i></span>
+                                </div>
+                                {% if form.username %}
+                                    {{ form.username }}
+                                    {% if form.username.errors %}
+                                        <div class="invalid-feedback d-block">
+                                            {{ form.username.errors }}
+                                        </div>
+                                    {% endif %}
+                                {% else %}
+                                    <input 
+                                        type="text" 
+                                        class="form-control" 
+                                        id="username" 
+                                        name="username" 
+                                        placeholder="Choose a username"
+                                        required
+                                    >
+                                {% endif %}
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="email">Email<span class="text-danger">*</span></label>
+                            <div class="input-group">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text"><i class="fas fa-envelope"></i></span>
+                                </div>
+                                {% if form.email %}
+                                    {{ form.email }}
+                                    {% if form.email.errors %}
+                                        <div class="invalid-feedback d-block">
+                                            {{ form.email.errors }}
+                                        </div>
+                                    {% endif %}
+                                {% else %}
+                                    <input 
+                                        type="email" 
+                                        class="form-control" 
+                                        id="email" 
+                                        name="email" 
+                                        placeholder="Enter your email"
+                                        required
+                                    >
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="form-section">
+                        <h5>Security</h5>
+                        
+                        <div class="form-group">
+                            <label for="password1">Password<span class="text-danger">*</span></label>
+                            <div class="input-group">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text"><i class="fas fa-lock"></i></span>
+                                </div>
+                                {% if form.password1 %}
+                                    {{ form.password1 }}
+                                    {% if form.password1.errors %}
+                                        <div class="invalid-feedback d-block">
+                                            {{ form.password1.errors }}
+                                        </div>
+                                    {% endif %}
+                                {% else %}
+                                    <input 
+                                        type="password" 
+                                        class="form-control" 
+                                        id="password1" 
+                                        name="password1" 
+                                        placeholder="Create a password"
+                                        required
+                                    >
+                                {% endif %}
+                            </div>
+                            {% if form.password1.help_text %}
+                                <small class="form-text text-muted help-text">
+                                    {{ form.password1.help_text }}
+                                </small>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="password2">Confirm Password<span class="text-danger">*</span></label>
+                            <div class="input-group">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text"><i class="fas fa-lock"></i></span>
+                                </div>
+                                {% if form.password2 %}
+                                    {{ form.password2 }}
+                                    {% if form.password2.errors %}
+                                        <div class="invalid-feedback d-block">
+                                            {{ form.password2.errors }}
+                                        </div>
+                                    {% endif %}
+                                {% else %}
+                                    <input 
+                                        type="password" 
+                                        class="form-control" 
+                                        id="password2" 
+                                        name="password2" 
+                                        placeholder="Confirm your password"
+                                        required
+                                    >
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group form-check">
+                        <input type="checkbox" class="form-check-input" id="termsCheck" required>
+                        <label class="form-check-label" for="termsCheck">
+                            I agree to the <a href="#">Terms & Conditions</a> and <a href="#">Privacy Policy</a>
+                        </label>
+                    </div>
+                    
+                    <button type="submit" class="btn btn-register btn-block">
+                        <i class="fas fa-user-plus mr-2"></i>Create Account
+                    </button>
+                </form>
+                
+                <div class="register-footer">
+                    <p>Already have an account? <a href="{% url 'login' %}">Login</a></p>
+                </div>
+            </div>
         </div>
-        <div class="card-body">
-          <!-- Farm-Mate Branding - Centered and Prominent -->
-          <div class="text-center mb-4">
-            <h2 class="text-success font-weight-bold">FARM-MATE</h2>
-            <p class="text-muted">Join the Farm-Mate community</p>
-          </div>
-          
-          <!-- Display messages -->
-          {% if messages %}
-            {% for message in messages %}
-              <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
-                {{ message }}
-                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                  <span aria-hidden="true">&times;</span>
-                </button>
-              </div>
-            {% endfor %}
-          {% endif %}
-          
-          <!-- Registration Form -->
-          <form method="POST" action="{% url 'register' %}" class="auth-form">
-            {% csrf_token %}
-            <div class="form-group">
-              <label for="username">Username</label>
-              <div class="input-group">
-                <div class="input-group-prepend">
-                  <span class="input-group-text"><i class="fas fa-user"></i></span>
-                </div>
-                <input type="text" class="form-control" id="username" name="username" placeholder="Choose a username" required>
-              </div>
-              <small class="form-text text-muted validation-feedback">Username must be unique and contain only letters, numbers, and underscores.</small>
-            </div>
-            
-            <div class="form-group">
-              <label for="email">Email</label>
-              <div class="input-group">
-                <div class="input-group-prepend">
-                  <span class="input-group-text"><i class="fas fa-envelope"></i></span>
-                </div>
-                <input type="email" class="form-control" id="email" name="email" placeholder="Enter your email address" required>
-              </div>
-            </div>
-            
-            <div class="form-group">
-              <label for="password">Password</label>
-              <div class="input-group">
-                <div class="input-group-prepend">
-                  <span class="input-group-text"><i class="fas fa-lock"></i></span>
-                </div>
-                <input type="password" class="form-control" id="password" name="password" placeholder="Create a strong password" required>
-                <div class="input-group-append">
-                  <span class="input-group-text password-toggle" onclick="togglePassword('password')">
-                    <i class="far fa-eye" id="password-toggle-icon"></i>
-                  </span>
-                </div>
-              </div>
-              <small class="form-text text-muted validation-feedback">Password must be at least 8 characters long.</small>
-            </div>
-            
-            <div class="form-group">
-              <label for="confirmpassword">Confirm Password</label>
-              <div class="input-group">
-                <div class="input-group-prepend">
-                  <span class="input-group-text"><i class="fas fa-lock"></i></span>
-                </div>
-                <input type="password" class="form-control" id="confirmpassword" name="confirmpassword" placeholder="Confirm your password" required>
-                <div class="input-group-append">
-                  <span class="input-group-text password-toggle" onclick="togglePassword('confirmpassword')">
-                    <i class="far fa-eye" id="confirmpassword-toggle-icon"></i>
-                  </span>
-                </div>
-              </div>
-            </div>
-            
-            <div class="form-group">
-              <div class="form-check">
-                <input type="checkbox" class="form-check-input" id="agree-terms" name="agree-terms" required>
-                <label class="form-check-label" for="agree-terms">I agree to the <a href="#" class="auth-link">Terms of Service</a> and <a href="#" class="auth-link">Privacy Policy</a></label>
-              </div>
-            </div>
-            
-            <div class="form-group">
-              <button type="submit" class="btn btn-auth btn-success btn-block" name="signup">
-                <i class="fas fa-user-plus mr-2"></i>Create Account
-              </button>
-            </div>
-          </form>
-          
-          <!-- OR divider with stronger centering -->
-          <div style="text-align: center; margin: 20px 0; position: relative;">
-            <hr style="margin-bottom: 0; position: relative;">
-            <div style="position: absolute; top: -10px; left: 50%; transform: translateX(-50%); background-color: white; padding: 0 10px;">
-              <span style="display: inline-block;">OR</span>
-            </div>
-          </div>
-          
-          <p class="text-center mt-3">Already have an account? <a href="{% url 'login' %}" class="auth-link">Login here</a></p>
-        </div>
-      </div>
     </div>
-  </div>
 </div>
-
-<script>
-  function togglePassword(inputId) {
-    const passwordInput = document.getElementById(inputId);
-    const toggleIcon = document.getElementById(inputId + '-toggle-icon');
-    
-    if (passwordInput.type === 'password') {
-      passwordInput.type = 'text';
-      toggleIcon.classList.remove('fa-eye');
-      toggleIcon.classList.add('fa-eye-slash');
-    } else {
-      passwordInput.type = 'password';
-      toggleIcon.classList.remove('fa-eye-slash');
-      toggleIcon.classList.add('fa-eye');
-    }
-  }
-  
-  document.addEventListener('DOMContentLoaded', function() {
-    const password = document.getElementById('password');
-    const confirmPassword = document.getElementById('confirmpassword');
-    
-    // Real-time password confirmation validation
-    confirmPassword.addEventListener('input', function() {
-      if (password.value !== confirmPassword.value) {
-        confirmPassword.setCustomValidity("Passwords don't match");
-      } else {
-        confirmPassword.setCustomValidity('');
-      }
-    });
-    
-    // Clear validation on password change
-    password.addEventListener('input', function() {
-      if (confirmPassword.value) {
-        if (password.value !== confirmPassword.value) {
-          confirmPassword.setCustomValidity("Passwords don't match");
-        } else {
-          confirmPassword.setCustomValidity('');
-        }
-      }
-    });
-  });
-</script>
 {% endblock %}

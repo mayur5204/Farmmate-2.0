@@ -33,7 +33,8 @@ INSTALLED_APPS = [
     'home',
     'crop_recommendation',
     'users',
-    'community',  # Add the community app
+    'community',
+    # Removed image cropping packages
 ]
 
 MIDDLEWARE = [

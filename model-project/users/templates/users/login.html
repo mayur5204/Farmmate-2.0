@@ -1,111 +1,284 @@
 {% extends 'base.html' %}
 {% load static %}
 
-{% block title %}Login - Farm-Mate{% endblock %}
+{% block title %}Login | FarmMate{% endblock %}
 
-{% block head %}
-  {{ block.super }}
-  <link rel="stylesheet" href="{% static 'css/users/auth-styles.css' %}" />
+{% block extra_css %}
+<style>
+    /* Main login page container */
+    .login-page {
+        min-height: calc(100vh - 300px);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 2rem 0;
+    }
+    
+    /* Card container */
+    .login-card {
+        background: white;
+        border-radius: 12px;
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+        overflow: hidden;
+        width: 100%;
+        max-width: 900px;
+        margin: 0 auto;
+        position: relative;
+    }
+    
+    /* Split layout */
+    .login-card-inner {
+        display: flex;
+        flex-direction: row;
+    }
+    
+    /* Left side - Image */
+    .login-image-side {
+        flex: 0 0 45%;
+        background-image: url('{% static "images/farm-login.jpg" %}');
+        background-size: cover;
+        background-position: center;
+        position: relative;
+    }
+    
+    .login-image-overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(46, 125, 50, 0.7);
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        color: white;
+        padding: 2rem;
+    }
+    
+    /* Right side - Form */
+    .login-form-side {
+        flex: 1;
+        padding: 3rem;
+        display: flex;
+        flex-direction: column;
+    }
+    
+    .login-welcome {
+        margin-bottom: 2rem;
+        text-align: center;
+    }
+    
+    .login-welcome h1 {
+        font-size: 1.75rem;
+        color: #333;
+        margin-bottom: 0.5rem;
+    }
+    
+    .login-welcome p {
+        color: #666;
+    }
+    
+    /* Form styling */
+    .login-form {
+        margin-bottom: 2rem;
+    }
+    
+    .form-group {
+        margin-bottom: 1.5rem;
+    }
+    
+    .form-control {
+        height: calc(2.5rem + 2px);
+        border-radius: 8px;
+        border: 1px solid #ddd;
+        padding: 0.5rem 1rem;
+        font-size: 1rem;
+    }
+    
+    .form-control:focus {
+        border-color: #2e7d32;
+        box-shadow: 0 0 0 0.2rem rgba(46, 125, 50, 0.25);
+    }
+    
+    label {
+        font-weight: 500;
+        margin-bottom: 0.5rem;
+        display: block;
+        color: #555;
+    }
+    
+    .input-group-prepend .input-group-text {
+        border-top-right-radius: 0;
+        border-bottom-right-radius: 0;
+        background-color: #f8f9fa;
+        border-color: #ddd;
+    }
+    
+    .form-check-label {
+        color: #555;
+    }
+    
+    /* Button styling */
+    .btn-login {
+        background-color: #2e7d32;
+        border-color: #2e7d32;
+        color: white;
+        border-radius: 8px;
+        padding: 0.75rem 1rem;
+        font-weight: 600;
+        font-size: 1rem;
+        transition: all 0.3s ease;
+    }
+    
+    .btn-login:hover, .btn-login:focus {
+        background-color: #1b5e20;
+        border-color: #1b5e20;
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(27, 94, 32, 0.3);
+    }
+    
+    .btn-login:active {
+        transform: translateY(0);
+    }
+    
+    /* Footer links */
+    .login-footer {
+        text-align: center;
+    }
+    
+    .login-footer a {
+        color: #2e7d32;
+        text-decoration: none;
+        transition: color 0.2s;
+    }
+    
+    .login-footer a:hover {
+        color: #1b5e20;
+        text-decoration: underline;
+    }
+    
+    /* Mobile responsiveness */
+    @media (max-width: 768px) {
+        .login-card-inner {
+            flex-direction: column;
+        }
+        
+        .login-image-side {
+            height: 180px;
+            flex: none;
+        }
+        
+        .login-image-overlay {
+            padding: 1rem;
+        }
+        
+        .login-image-overlay h2 {
+            font-size: 1.5rem;
+        }
+        
+        .login-form-side {
+            padding: 1.5rem;
+        }
+    }
+</style>
 {% endblock %}
 
 {% block content %}
-<div class="container auth-container">
-  <div class="row justify-content-center w-100">
-    <div class="col-md-6 col-lg-5">
-      <div class="auth-card card shadow">
-        <div class="card-header bg-success text-white text-center">
-          <h3>Welcome Back</h3>
-        </div>
-        <div class="card-body">
-          <!-- Farm-Mate Branding - Centered and Prominent -->
-          <div class="text-center mb-4">
-            <h2 class="text-success font-weight-bold">FARM-MATE</h2>
-            <p class="text-muted">Login to your account</p>
-          </div>
-          
-          <!-- Display messages -->
-          {% if messages %}
-            {% for message in messages %}
-              <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
-                {{ message }}
-                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                  <span aria-hidden="true">&times;</span>
-                </button>
-              </div>
-            {% endfor %}
-          {% endif %}
-          
-          <!-- Login Form -->
-          <form method="POST" class="auth-form">
-            {% csrf_token %}
-            <div class="form-group">
-              <label for="username">Username</label>
-              <div class="input-group">
-                <div class="input-group-prepend">
-                  <span class="input-group-text"><i class="fas fa-user"></i></span>
+<div class="login-page">
+    <div class="login-card">
+        <div class="login-card-inner">
+            <!-- Left side - Image with overlay -->
+            <div class="login-image-side">
+                <div class="login-image-overlay">
+                    <h2>Welcome Back!</h2>
+                    <p>Access your FarmMate account to get personalized crop recommendations and connect with the farming community.</p>
                 </div>
-                <input type="text" class="form-control" id="username" name="username" placeholder="Enter your username" required>
-              </div>
-            </div>
-            <div class="form-group">
-              <label for="password">Password</label>
-              <div class="input-group">
-                <div class="input-group-prepend">
-                  <span class="input-group-text"><i class="fas fa-lock"></i></span>
-                </div>
-                <input type="password" class="form-control" id="password" name="password" placeholder="Enter your password" required>
-                <div class="input-group-append">
-                  <span class="input-group-text password-toggle" onclick="togglePassword('password')">
-                    <i class="far fa-eye" id="password-toggle-icon"></i>
-                  </span>
-                </div>
-              </div>
             </div>
             
-            <div class="auth-options">
-              <div class="form-check">
-                <input type="checkbox" class="form-check-input" id="remember-me" name="remember-me">
-                <label class="form-check-label" for="remember-me">Remember me</label>
-              </div>
-              <a href="#" class="auth-link">Forgot password?</a>
+            <!-- Right side - Login form -->
+            <div class="login-form-side">
+                <div class="login-welcome">
+                    <h1>Login to FarmMate</h1>
+                    <p>Enter your credentials to access your account</p>
+                </div>
+                
+                {% if messages %}
+                    {% for message in messages %}
+                        <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                            <div class="d-flex align-items-center">
+                                {% if message.tags == 'success' %}
+                                    <i class="fas fa-check-circle mr-2"></i>
+                                {% elif message.tags == 'error' %}
+                                    <i class="fas fa-exclamation-circle mr-2"></i>
+                                {% elif message.tags == 'warning' %}
+                                    <i class="fas fa-exclamation-triangle mr-2"></i>
+                                {% elif message.tags == 'info' %}
+                                    <i class="fas fa-info-circle mr-2"></i>
+                                {% endif %}
+                                {{ message }}
+                            </div>
+                            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                    {% endfor %}
+                {% endif %}
+                
+                <form method="POST" action="{% url 'login' %}" class="login-form">
+                    {% csrf_token %}
+                    
+                    <div class="form-group">
+                        <label for="username">Username</label>
+                        <div class="input-group">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text"><i class="fas fa-user"></i></span>
+                            </div>
+                            <input 
+                                type="text" 
+                                class="form-control" 
+                                id="username" 
+                                name="username" 
+                                placeholder="Enter your username"
+                                required 
+                                autofocus
+                            >
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="password">Password</label>
+                        <div class="input-group">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text"><i class="fas fa-lock"></i></span>
+                            </div>
+                            <input 
+                                type="password" 
+                                class="form-control" 
+                                id="password" 
+                                name="password" 
+                                placeholder="Enter your password"
+                                required
+                            >
+                        </div>
+                    </div>
+                    
+                    <div class="form-group form-check">
+                        <input type="checkbox" class="form-check-input" id="rememberMe" name="remember_me">
+                        <label class="form-check-label" for="rememberMe">Keep me logged in</label>
+                    </div>
+                    
+                    <button type="submit" class="btn btn-login btn-block">
+                        <i class="fas fa-sign-in-alt mr-2"></i>Login
+                    </button>
+                </form>
+                
+                <div class="login-footer">
+                    <p>Don't have an account? <a href="{% url 'register' %}">Create account</a></p>
+                    <p><a href="#">Forgot password?</a></p>
+                </div>
             </div>
-            
-            <div class="form-group">
-              <button type="submit" class="btn btn-auth btn-success btn-block" name="login">
-                <i class="fas fa-sign-in-alt mr-2"></i>Login
-              </button>
-            </div>
-          </form>
-          
-          <!-- OR divider with stronger centering -->
-          <div style="text-align: center; margin: 20px 0; position: relative;">
-            <hr style="margin-bottom: 0; position: relative;">
-            <div style="position: absolute; top: -10px; left: 50%; transform: translateX(-50%); background-color: white; padding: 0 10px;">
-              <span style="display: inline-block;">OR</span>
-            </div>
-          </div>
-          
-          <p class="text-center mt-3">Don't have an account? <a href="{% url 'register' %}" class="auth-link">Register here</a></p>
         </div>
-      </div>
     </div>
-  </div>
 </div>
-
-<script>
-  function togglePassword(inputId) {
-    const passwordInput = document.getElementById(inputId);
-    const toggleIcon = document.getElementById(inputId + '-toggle-icon');
-    
-    if (passwordInput.type === 'password') {
-      passwordInput.type = 'text';
-      toggleIcon.classList.remove('fa-eye');
-      toggleIcon.classList.add('fa-eye-slash');
-    } else {
-      passwordInput.type = 'password';
-      toggleIcon.classList.remove('fa-eye-slash');
-      toggleIcon.classList.add('fa-eye');
-    }
-  }
-</script>
 {% endblock %}

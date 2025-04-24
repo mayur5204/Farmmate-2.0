@@ -81,10 +81,7 @@
                                 <h6 class="text-primary mb-0">{{ user.username }}</h6>
                                 <small class="text-muted">{{ user.email }}</small>
                             </div>
-                            <a class="dropdown-item" href="{% url 'profile' %}"><i class="fas fa-user-circle text-primary mr-2"></i> My Profile</a>
-                            <a class="dropdown-item" href="{% url 'dashboard' %}"><i class="fas fa-history text-secondary mr-2"></i> Dashboard</a>
-                            <a class="dropdown-item" href="{% url 'settings' %}"><i class="fas fa-cog text-secondary mr-2"></i> Settings</a>
-                            <div class="dropdown-divider"></div>
+                                <!-- Removed profile, dashboard, and settings links -->
                             <a class="dropdown-item" href="{% url 'logout' %}"><i class="fas fa-sign-out-alt text-danger mr-2"></i> Logout</a>
                         </div>
                     </div>

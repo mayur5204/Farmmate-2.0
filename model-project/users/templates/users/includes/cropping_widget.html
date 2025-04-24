@@ -1,0 +1,12 @@
+{% if image_field %}
+<div class="image-cropper-widget">
+    <img src="{{ image_field.url }}" 
+         alt="Image to crop" 
+         class="jcrop-image" 
+         data-crop-field-name="{{ image_field.field.name }}"
+         style="max-width:100%;">
+</div>
+<div class="cropping-help text-muted mt-2 small">
+    <i class="fas fa-info-circle"></i> Drag and resize the box to select the part of the image you want to use as your profile picture.
+</div>
+{% endif %}
