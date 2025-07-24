@@ -19,6 +19,14 @@ ALLOWED_HOSTS = [
     '127.0.0.1', 
     '.pythonanywhere.com', 
     '.ngrok-free.app',
+    'farm-mate.onrender.com',
+    '.onrender.com',
+]
+
+# CSRF trusted origins for production
+CSRF_TRUSTED_ORIGINS = [
+    'https://farm-mate.onrender.com',
+    'https://*.onrender.com',
 ]
 
 # Application definition
